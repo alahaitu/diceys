@@ -117,7 +117,7 @@ var Stone = require('../prefabs/stone')
       this.player.body.collideWorldBounds = true;
       this.player.body.immovable = true;
 
-
+      this.collisionsound = this.add.audio('collision_sound');
       this.cursors = this.game.input.keyboard.createCursorKeys();
 
     },
@@ -141,6 +141,7 @@ var Stone = require('../prefabs/stone')
     },
     collisionHandler: function (obj1, obj2) {
 
+      //this.collisionsound.play();
       console.log("collide");
       this.tree1.autoScroll(0, 0);
       this.tree2.autoScroll(0, 0);
@@ -217,14 +218,18 @@ module.exports = Boot;
       this.add.sprite(849, 353, 'frontyard_patch');
       this.alien = this.add.sprite(470, 91, 'frontyard_alien');
 
+      this.branchsound = this.add.audio('branch1_sound');
       this.helmetsound = this.add.audio('helmet_on_sound');
+      this.bicyclesound = this.add.audio('bicycle_bell_sound');
     },
     startBikeLane: function(){
+      this.bicyclesound.play();
       this.game.state.start('bikelane');
     },
     helmetAnimation: function(){
       this.anim.play(8, false);
       this.anim.stop;
+      this.branchsound.play();
     },
     wearHelmet: function(){
       this.helmet.destroy();
@@ -394,6 +399,8 @@ Preload.prototype = {
       this.load.image('frontyard_button', 'assets/FrontYard/FrontYard_BicycleButton.png');
       this.load.spritesheet('frontyard_helmet_animation', 'assets/FrontYard/Helmet_SpriteMap.png', 150, 150, 9);
       this.load.audio('helmet_on_sound', 'assets/sounds/helmet_on.wav');
+      this.load.audio('branch1_sound', 'assets/sounds/branch1.wav');
+      this.load.audio('bicycle_bell_sound', 'assets/sounds/bicycle_bell.wav');
 
       // Bike lane assets
       this.load.image('bikelane_bg', 'assets/BikeLane/BikeLane_BG.png');
@@ -404,6 +411,7 @@ Preload.prototype = {
       this.load.image('bikelane_stone3', 'assets/BikeLane/BikeLane_Stone3.png');    
       this.load.image('bikelane_trees1', 'assets/BikeLane/BikeLane_TreeSide_L.png');
       this.load.image('bikelane_trees2', 'assets/BikeLane/BikeLane_TreeSide_R.png');
+      this.load.audio('collision_sound', 'assets/sounds/collision.wav');
 
       console.log("Yo dawg. Preloader preloaded.");
 
