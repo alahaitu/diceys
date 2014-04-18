@@ -12,19 +12,22 @@ window.onload = function () {
   game.state.add('frontyard', require('./states/frontyard'));
   game.state.add('gameover', require('./states/gameover'));
   game.state.add('home', require('./states/home'));
+  game.state.add('iceCream', require('./states/iceCream'));
   game.state.add('menu', require('./states/menu'));
   game.state.add('play', require('./states/play'));
   game.state.add('preload', require('./states/preload'));
   game.state.add('thinking', require('./states/thinking'));
+  game.state.add('veggiePatch', require('./states/veggiePatch'));
   game.state.add('walkingout', require('./states/walkingout'));
   
 
   game.state.start('boot');
 };
-},{"./states/afterbikelane":3,"./states/bikelane":4,"./states/boot":5,"./states/frontyard":6,"./states/gameover":7,"./states/home":8,"./states/menu":9,"./states/play":10,"./states/preload":11,"./states/thinking":12,"./states/walkingout":13}],2:[function(require,module,exports){
+},{"./states/afterbikelane":3,"./states/bikelane":4,"./states/boot":5,"./states/frontyard":6,"./states/gameover":7,"./states/home":8,"./states/iceCream":9,"./states/menu":10,"./states/play":11,"./states/preload":12,"./states/thinking":13,"./states/veggiePatch":14,"./states/walkingout":15}],2:[function(require,module,exports){
 'use strict';
 
-var Stone = function(game, x, y, frame) {
+var Stone = function(game, x, y, frame, speed) {
+  var ySpeed = speed;
   Phaser.Sprite.call(this, game, x, y, 'bikelane_stone1', frame);
 
   // initialize your prefab here
@@ -42,10 +45,9 @@ Stone.prototype.update = function() {
     this.body.y = 0-this.height;
     this.body.x = this.game.rnd.integerInRange(190, 834-this.width);
     this.loadTexture('bikelane_stone' + this.game.rnd.integerInRange(1,3), 0);
-
   }
   else {
-    this.body.y += 3.3;
+    this.body.y += 4;
   }
 };
 
@@ -55,70 +57,54 @@ module.exports = Stone;
 'use strict';
   function Afterbikelane() {}
   Afterbikelane.prototype = {
-    preload: function() {
-      // Override this method to add some load operations. 
-      // If you need to use the loader, you may need to use them here.
-    },
     create: function() {
-      // This method is called after the game engine successfully switches states. 
-      // Feel free to add any setup code here (do not load anything here, override preload() instead).
+      this.add.button(0, 0, 'after_bike_lane', this.startIceCream, this);
     },
-    update: function() {
-      // state update code
-    },
-    paused: function() {
-      // This method will be called when game paused.
-    },
-    render: function() {
-      // Put render operations here.
-    },
-    shutdown: function() {
-      // This method will be called when the state is shut down 
-      // (i.e. you switch to another state from this one).
+    startIceCream: function() {
+      this.game.state.start('iceCream');
     }
   };
 module.exports = Afterbikelane;
 
 },{}],4:[function(require,module,exports){
 'use strict';
-var Stone = require('../prefabs/stone')
+var Stone = require('../prefabs/stone');
   function Bikelane() {}
-    var player;
-    var tree1;
-    var speed = 4;
+  var speed = 4;
+  var isColliding;
   Bikelane.prototype = {
     create: function() {
+
+      isColliding = false;
 
       this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
       this.add.sprite(0, 0, 'bikelane_bg');
 
       // Scrolling stones      
-      this.stone1 = new Stone(this.game, 642, 0, 1);
-      this.stone2 = new Stone(this.game, 370, 0, 2);
-      this.stone3 = new Stone(this.game, 260, 0, 3);
-
+      this.stone1 = new Stone(this.game, 642, 0, 1, this.speed);
       this.game.add.existing(this.stone1);
-      //game.add.existing(this.stone2);
-      //game.add.existing(this.stone3);
       
-      // Scrolling trees      
+      // Scrolling trees
       this.tree1 = this.add.tileSprite(0, 0, 190, 768, 'bikelane_trees1');
       this.tree2 = this.add.tileSprite(834, 0, 190, 768, 'bikelane_trees2');
-      this.tree1.autoScroll(0, 200);
-      this.tree2.autoScroll(0, 200);
 
       // Player setup
       this.player = this.add.sprite(this.game.width/2, (this.game.height-113), 'bikelane_alien');
       this.player.anchor.setTo(0.5, 0.5);
 
-
       this.game.physics.enable([this.player, this.stone1], Phaser.Physics.ARCADE);
       this.player.body.collideWorldBounds = true;
+      this.player.body.setSize(33, this.player.height, 0, 0);
       this.player.body.immovable = true;
+      this.player.body.allowGravity = false;
+      this.player.body.allowRotation = false;
 
       this.collisionsound = this.add.audio('collision_sound');
       this.cursors = this.game.input.keyboard.createCursorKeys();
+
+      // Timer setup
+      this.game.time.events.add(Phaser.Timer.SECOND * 4, this.afterBikelane, this);
 
     },
     update: function() {
@@ -127,24 +113,36 @@ var Stone = require('../prefabs/stone')
       if (this.cursors.left.isDown)
       {
         if (this.player.x > 190+(this.player.width/2)) {
-          this.player.x = this.player.x - 4
+          this.player.x = this.player.x - 4;
         }
       }
       else if (this.cursors.right.isDown)
       {
         if (this.player.x < 834-(this.player.width/2)) {
-          this.player.x = this.player.x + 4
+          this.player.x = this.player.x + 4;
         }
       }
       this.game.physics.arcade.collide(this.stone1, this.player, this.collisionHandler, null, this);
 
+      if (!this.isColliding) {
+        this.tree1.tilePosition.y += speed;
+        this.tree2.tilePosition.y += speed;
+      }
+
+      this.isColliding = false;
+    
     },
     collisionHandler: function (obj1, obj2) {
-
-      //this.collisionsound.play();
-      console.log("collide");
-      this.tree1.autoScroll(0, 0);
-      this.tree2.autoScroll(0, 0);
+      this.isColliding = true;
+      this.collisionsound.play();
+    },
+    afterBikelane: function(){
+      console.log('prööt');
+      this.game.state.start('afterbikelane');
+    },
+    render: function() {
+      //this.game.debug.body(this.player);
+      //this.game.debug.body(this.stone1);
     }
   };
 module.exports = Bikelane;
@@ -213,30 +211,41 @@ module.exports = Boot;
       this.helmet.inputEnabled = true;
       this.helmet.events.onInputDown.add(this.wearHelmet, this);
 
-      this.anim = this.helmet.animations.add('swing');
+      this.helmetAnim = this.helmet.animations.add('swing');
 
-      this.add.sprite(849, 353, 'frontyard_patch');
+      this.patch = this.add.sprite(849, 353, 'frontyard_patch');
+      this.patch.inputEnabled = true;
+      this.patch.events.onInputDown.add(this.startVeggiePatch, this);
+      
       this.alien = this.add.sprite(470, 91, 'frontyard_alien');
 
       this.branchsound = this.add.audio('branch1_sound');
       this.helmetsound = this.add.audio('helmet_on_sound');
       this.bicyclesound = this.add.audio('bicycle_bell_sound');
     },
+    shutdown: function() {
+      this.bicycle.destroy();
+      this.alien.destroy();
+    },
     startBikeLane: function(){
       this.bicyclesound.play();
       this.game.state.start('bikelane');
     },
+    startVeggiePatch: function() {
+      this.game.state.start('veggiePatch');
+    },
     helmetAnimation: function(){
-      this.anim.play(8, false);
-      this.anim.stop;
-      this.branchsound.play();
+        this.helmetAnim.play(8, false);
+        this.helmetAnim.stop;
+        this.branchsound.play();
     },
     wearHelmet: function(){
-      this.helmet.destroy();
+      this.helmet.kill();
       this.helmetsound.play();
       this.alien.y = 159;
       this.alien.loadTexture('frontyard_alien_helmet', 0);
       this.add.button(873, 614, 'frontyard_button', this.startBikeLane, this);
+      this.bicycle.events.onInputDown.remove(this.helmetAnimation, this);
     }
   };
 module.exports = Frontyard;
@@ -289,6 +298,19 @@ module.exports = GameOver;
 module.exports = Home;
 
 },{}],9:[function(require,module,exports){
+'use strict';
+  function IceCream() {}
+  IceCream.prototype = {
+    create: function() {
+      this.add.button(0, 0, 'ice_cream_ph', this.startAfterBikelane, this);
+    },
+    startAfterBikelane: function() {
+      this.game.state.start('afterbikelane');
+    }
+  };
+module.exports = IceCream;
+
+},{}],10:[function(require,module,exports){
 
 'use strict';
 function Menu() {}
@@ -322,7 +344,7 @@ Menu.prototype = {
 
 module.exports = Menu;
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 
   'use strict';
   function Play() {}
@@ -349,7 +371,7 @@ module.exports = Menu;
   };
   
   module.exports = Play;
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 
 'use strict';
 function Preload() {
@@ -380,6 +402,11 @@ Preload.prototype = {
       // Cutscene assets
       this.load.image('thinking', 'assets/Animation_Stills/S3_Thinking.png');
       this.load.image('walking_out_house', 'assets/Animation_Stills/S5_WalkingOutHouse.png');
+      this.load.image('after_bike_lane', 'assets/PlayG_IceCream/PlayG_IceCream_Visual.png');
+
+      // Mini game placeholders
+      this.load.image('veggie_patch_ph', 'assets/FrontYard/MiniGames/VeggiePatch.png');
+      this.load.image('ice_cream_ph', 'assets/PlayG_IceCream/IceCream.png');
 
       // Getting Ready at Home assets
       this.load.image('home_bg', 'assets/GettingReadyAtHome/GettingReady_BG.png');
@@ -431,7 +458,7 @@ Preload.prototype = {
 
 module.exports = Preload;
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 'use strict';
   function Thinking() {}
   Thinking.prototype = {
@@ -444,7 +471,20 @@ module.exports = Preload;
   };
 module.exports = Thinking;
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
+'use strict';
+  function VeggiePatch() {}
+  VeggiePatch.prototype = {
+    create: function() {
+      this.add.button(0, 0, 'veggie_patch_ph', this.startFrontYard, this);
+    },
+    startFrontYard: function() {
+      this.game.state.start('frontyard');
+    }
+  };
+module.exports = VeggiePatch;
+
+},{}],15:[function(require,module,exports){
 'use strict';
   function Walkingout() {}
   Walkingout.prototype = {
