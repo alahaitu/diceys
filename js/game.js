@@ -547,16 +547,36 @@ module.exports = Trampoline;
       this.bounceCarrot(this.tomato);
       this.bounceCarrot(this.potato);
 
+      this.potato.inputEnabled = true;
+      this.carrot.inputEnabled = true;
+      this.tomato.inputEnabled = true;
+      this.potato.events.onInputDown.add(this.clickPotato, this);
+      this.carrot.events.onInputDown.add(this.clickCarrot, this);
+      this.tomato.events.onInputDown.add(this.clickTomato, this);
+
+      this.popSound = this.add.audio('helmet_on_sound');
+
     },
     update: function() {
     },
     spawnCarrot: function() {
-
+    },
+    clickPotato: function() {
+      this.popSound.play();
+      this.potato.kill();
+    },
+    clickCarrot: function() {
+      this.popSound.play();
+      this.carrot.kill();
+    },
+    clickTomato: function() {
+      this.popSound.play();
+      this.tomato.kill();
     },
     bounceCarrot: function(item) {
       var bounce = this.game.add.tween(item);
-      bounce.to({ y: (item.y-200) }, 1000 + Math.random() * 3000, Phaser.Easing.Bounce.Out)
-      .to({ y: item.y+200 }, 1000 + Math.random() * 3000, Phaser.Easing.Bounce.Out);
+      bounce.to({ y: (item.y-150) }, 1000 + Math.random() * 3000, Phaser.Easing.Bounce.Out)
+      .to({ y: item.y+150 }, 1000 + Math.random() * 3000, Phaser.Easing.Bounce.Out);
       //bounce.onComplete.add(this.spawnCarrot, this)
       bounce.loop();
       bounce.start();
