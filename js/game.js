@@ -106,7 +106,7 @@ var Stone = require('../prefabs/stone');
       // Timer setup
       this.game.time.events.add(Phaser.Timer.SECOND * 15, this.afterBikelane, this);
 
-      this.leftButton = this.add.button(25, 304, 'bikelane_left_button', this.leftTrue, this);
+      this.leftButton = this.add.button(25, 304, 'bikelane_left_button', this.moveLeft, this);
       this.rightButton = this.add.button(840, 304, 'bikelane_right_button', this.moveRight, this);
 
     },
@@ -133,12 +133,12 @@ var Stone = require('../prefabs/stone');
     },
     moveLeft: function() {
       if (this.player.x > 190+(this.player.width/2)) {
-        this.player.x = this.player.x - 4;
+        this.player.x = this.player.x - 8;
       }
     },
     moveRight: function() {
       if (this.player.x < 834-(this.player.width/2)) {
-        this.player.x = this.player.x + 4;
+        this.player.x = this.player.x + 8;
       }
     },
     collisionHandler: function (obj1, obj2) {
@@ -464,7 +464,7 @@ Preload.prototype = {
       this.load.image('veggiep_slice3', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Slice3.png');
       this.load.image('veggiep_slice4', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Slice4.png');
       this.load.image('veggie_game_win', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Win.png');
-      this.load.audio('picking_sound', 'assets/sounds/picking_veggie.wav');
+      this.load.audio('applause_sound', 'assets/sounds/applause.wav');
 
       // Bike lane assets
       this.load.image('bikelane_bg', 'assets/BikeLane/BikeLane_BG.png');
@@ -529,7 +529,9 @@ module.exports = Trampoline;
   VeggieGameWin.prototype = {
     create: function() {
       this.add.button(0, 0, 'veggie_game_win', this.startFrontYard, this);
+      this.applauseSound = this.add.audio('applause_sound');
       this.game.time.events.add(Phaser.Timer.SECOND * 3, this.startFrontYard, this);
+      this.applauseSound.play();
     },
     startFrontYard: function() {
       this.game.state.start('frontyard');
