@@ -582,7 +582,7 @@ module.exports = VeggieGameWin;
       this.tomato.events.onInputDown.add(this.clickTomato, this);
 
       this.popSound = this.add.audio('picking_sound');
-      this.popSound.volume = -0.5;
+      //this.popSound.volume = -0.5;
 
     },
     update: function() {
@@ -591,31 +591,39 @@ module.exports = VeggieGameWin;
       }
     },
     resetPotato: function() {
-      this.potato.reset(150, 367);
+      this.randX = this.randomX();
+      this.potato.reset(this.randX, 367);
     },
     resetCarrot: function() {
-      this.carrot.reset(674, 187);
+      this.randX = this.randomX();
+      this.carrot.reset(this.randX, 187);
     },
     resetTomato: function() {
-      this.tomato.reset(414, 518);
+      this.randX = this.randomX();
+      this.tomato.reset(this.randX, 518);
+    },
+    randomX: function() {
+      this.xArray = [150,414,679];
+      this.xCoord = this.game.rnd.pick(this.xArray);
+      return this.xCoord;
     },
     clickPotato: function() {
       this.popSound.play();
-      this.scorePointer.x += 50;
+      this.scorePointer.x += 28;
       this.potato.kill();
-      this.game.time.events.add(Phaser.Timer.SECOND * 4, this.resetPotato, this);
+      this.game.time.events.add(Phaser.Timer.SECOND * 2, this.resetPotato, this);
     },
     clickCarrot: function() {
       this.popSound.play();
       this.carrot.kill();
-      this.scorePointer.x += 50;
-      this.game.time.events.add(Phaser.Timer.SECOND * 4, this.resetCarrot, this);
+      this.scorePointer.x += 28;
+      this.game.time.events.add(Phaser.Timer.SECOND * 2, this.resetCarrot, this);
     },
     clickTomato: function() {
       this.popSound.play();
       this.tomato.kill();
-      this.scorePointer.x += 50;
-      this.game.time.events.add(Phaser.Timer.SECOND * 4, this.resetTomato, this);
+      this.scorePointer.x += 28;
+      this.game.time.events.add(Phaser.Timer.SECOND * 2, this.resetTomato, this);
     },
     bounceCarrot: function(item) {
       var bounce = this.game.add.tween(item);
