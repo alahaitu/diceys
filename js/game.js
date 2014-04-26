@@ -133,12 +133,12 @@ var Stone = require('../prefabs/stone');
     },
     moveLeft: function() {
       if (this.player.x > 190+(this.player.width/2)) {
-        this.player.x = this.player.x - 8;
+        this.player.x = this.player.x - 25;
       }
     },
     moveRight: function() {
       if (this.player.x < 834-(this.player.width/2)) {
-        this.player.x = this.player.x + 8;
+        this.player.x = this.player.x + 25;
       }
     },
     collisionHandler: function (obj1, obj2) {
