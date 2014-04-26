@@ -586,7 +586,7 @@ module.exports = VeggieGameWin;
 
     },
     update: function() {
-      if (this.scorePointer.x > 865) {
+      if (this.scorePointer.x > 807.5) {
          this.game.state.start('veggieGameWin');
       }
     },
