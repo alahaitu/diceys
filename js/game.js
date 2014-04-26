@@ -17,13 +17,14 @@ window.onload = function () {
   game.state.add('play', require('./states/play'));
   game.state.add('preload', require('./states/preload'));
   game.state.add('thinking', require('./states/thinking'));
+  game.state.add('trampoline', require('./states/trampoline'));
   game.state.add('veggiePatch', require('./states/veggiePatch'));
   game.state.add('walkingout', require('./states/walkingout'));
   
 
   game.state.start('boot');
 };
-},{"./states/afterbikelane":3,"./states/bikelane":4,"./states/boot":5,"./states/frontyard":6,"./states/gameover":7,"./states/home":8,"./states/iceCream":9,"./states/menu":10,"./states/play":11,"./states/preload":12,"./states/thinking":13,"./states/veggiePatch":14,"./states/walkingout":15}],2:[function(require,module,exports){
+},{"./states/afterbikelane":3,"./states/bikelane":4,"./states/boot":5,"./states/frontyard":6,"./states/gameover":7,"./states/home":8,"./states/iceCream":9,"./states/menu":10,"./states/play":11,"./states/preload":12,"./states/thinking":13,"./states/trampoline":14,"./states/veggiePatch":15,"./states/walkingout":16}],2:[function(require,module,exports){
 'use strict';
 
 var Stone = function(game, x, y, frame, speed) {
@@ -52,7 +53,6 @@ Stone.prototype.update = function() {
 };
 
 module.exports = Stone;
-
 },{}],3:[function(require,module,exports){
 'use strict';
   function Afterbikelane() {}
@@ -61,7 +61,7 @@ module.exports = Stone;
       this.add.button(0, 0, 'after_bike_lane', this.startIceCream, this);
     },
     startIceCream: function() {
-      this.game.state.start('iceCream');
+      this.game.state.start('trampoline');
     }
   };
 module.exports = Afterbikelane;
@@ -104,7 +104,7 @@ var Stone = require('../prefabs/stone');
       this.cursors = this.game.input.keyboard.createCursorKeys();
 
       // Timer setup
-      this.game.time.events.add(Phaser.Timer.SECOND * 4, this.afterBikelane, this);
+      this.game.time.events.add(Phaser.Timer.SECOND * 15, this.afterBikelane, this);
 
     },
     update: function() {
@@ -134,10 +134,9 @@ var Stone = require('../prefabs/stone');
     },
     collisionHandler: function (obj1, obj2) {
       this.isColliding = true;
-      this.collisionsound.play();
+      //this.collisionsound.play();
     },
     afterBikelane: function(){
-      console.log('prööt');
       this.game.state.start('afterbikelane');
     },
     render: function() {
@@ -146,7 +145,6 @@ var Stone = require('../prefabs/stone');
     }
   };
 module.exports = Bikelane;
-
 },{"../prefabs/stone":2}],5:[function(require,module,exports){
 
 'use strict';
@@ -256,8 +254,9 @@ module.exports = Boot;
       this.helmetsound.play();
       this.alien.y = 159;
       this.alien.loadTexture('frontyard_alien_helmet', 0);
-      this.add.button(873, 614, 'frontyard_button', this.startBikeLane, this);
+      //this.add.button(873, 614, 'frontyard_button', this.startBikeLane, this);
       this.bicycle.events.onInputDown.remove(this.helmetAnimation, this);
+      this.bicycle.events.onInputDown.add(this.startBikeLane, this);
     }
   };
 module.exports = Frontyard;
@@ -347,7 +346,7 @@ Menu.prototype = {
     }*/
   },
   startClick: function() {
-    this.game.state.start('bikelane');
+    this.game.state.start('veggiePatch');
   },
   startYellow: function() {
     this.game.state.start('thinking');
@@ -415,6 +414,7 @@ Preload.prototype = {
       this.load.image('thinking', 'assets/Animation_Stills/S3_Thinking.png');
       this.load.image('walking_out_house', 'assets/Animation_Stills/S5_WalkingOutHouse.png');
       this.load.image('after_bike_lane', 'assets/PlayG_IceCream/PlayG_IceCream_Visual.png');
+      this.load.image('trampoline_bg', 'assets/Animation_Stills/S7_Trampoline.png');
 
       // Mini game placeholders
       this.load.image('veggie_patch_ph', 'assets/FrontYard/MiniGames/VeggiePatch.png');
@@ -440,6 +440,23 @@ Preload.prototype = {
       this.load.audio('helmet_on_sound', 'assets/sounds/helmet_on.wav');
       this.load.audio('branch1_sound', 'assets/sounds/branch1.wav');
       this.load.audio('bicycle_bell_sound', 'assets/sounds/bicycle_bell.wav');
+
+      // Veggie patch mini game assets
+      this.load.image('veggiep_bg', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Background.png');
+      this.load.image('veggiep_button', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Button.png');
+      this.load.image('veggiep_carrot', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Carrot.png');
+      this.load.image('veggiep_potato', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Potato.png');
+      this.load.image('veggiep_tomato', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Tomato.png');
+      this.load.image('veggiep_score_carrot1', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_ScoreCarrot1.png');
+      this.load.image('veggiep_score_carrot2', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_ScoreCarrot2.png');
+      this.load.image('veggiep_score_potato1', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_ScorePotato1.png');
+      this.load.image('veggiep_score_potato2', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_ScorePotato2.png');
+      this.load.image('veggiep_score_tomato1', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_ScoreTomato1.png');
+      this.load.image('veggiep_score_tomato2', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_ScoreTomato2.png');
+      this.load.image('veggiep_slice1', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Slice1.png');
+      this.load.image('veggiep_slice2', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Slice2.png');
+      this.load.image('veggiep_slice3', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Slice3.png');
+      this.load.image('veggiep_slice4', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Slice4.png');
 
       // Bike lane assets
       this.load.image('bikelane_bg', 'assets/BikeLane/BikeLane_BG.png');
@@ -485,18 +502,73 @@ module.exports = Thinking;
 
 },{}],14:[function(require,module,exports){
 'use strict';
+  function Trampoline() {}
+  Trampoline.prototype = {
+    create: function() {
+      this.add.button(0, 0, 'trampoline_bg', this.startAfterBikelane, this);
+    },
+    startAfterBikelane: function() {
+      this.game.state.start('afterbikelane');
+    }
+  };
+module.exports = Trampoline;
+
+},{}],15:[function(require,module,exports){
+'use strict';
   function VeggiePatch() {}
   VeggiePatch.prototype = {
     create: function() {
-      this.add.button(0, 0, 'veggie_patch_ph', this.startFrontYard, this);
+      this.add.sprite(0, 0, 'veggiep_bg');
+      this.add.sprite(0, 0, 'veggiep_slice1');
+      this.carrot = this.add.sprite(150, 187, 'veggiep_carrot');
+      this.add.sprite(0, 258, 'veggiep_slice2');
+      this.potato = this.add.sprite(674, 368, 'veggiep_potato');
+      this.add.sprite(0, 438, 'veggiep_slice3');
+      this.tomato = this.add.sprite(105, 518, 'veggiep_tomato');
+      this.add.sprite(0, 618, 'veggiep_slice4');
+      this.backButton = this.add.button(905, 40, 'veggiep_button' , this.startFrontYard, this);
+      /*this.add.sprite(65, 26, 'veggiep_score_carrot1');
+      this.add.sprite(150, 40, 'veggiep_score_carrot2');
+      this.add.sprite(315, 52, 'veggiep_score_potato1');
+      this.add.sprite(412, 40, 'veggiep_score_potato2');
+      this.add.sprite(587, 52,'veggiep_score_tomato1');
+      this.add.sprite(674, 40, 'veggiep_score_tomato2');*/
+
+      this.game.physics.startSystem(Phaser.Physics.ARCADE);
+      this.game.physics.enable([this.potato, this.tomato, this.carrot], Phaser.Physics.ARCADE);
+
+      //this.carrotSpawner = this.game.time.events.loop(Phaser.Timer.SECOND * 1.25, this.spawnCarrot, this);
+      //this.carrotSpawner.timer.start();
+
+      //this.potato.body.velocity.y = -100; 
+      //this.tomato.body.velocity.y = -100; 
+      //this.carrot.body.velocity.y = -100;   
+      this.bounceCarrot(this.carrot);
+      this.bounceCarrot(this.tomato);
+      this.bounceCarrot(this.potato);
+
+    },
+    update: function() {
+    },
+    spawnCarrot: function() {
+
+    },
+    bounceCarrot: function(item) {
+      var bounce = this.game.add.tween(item);
+      bounce.to({ y: (item.y-200) }, 1000 + Math.random() * 3000, Phaser.Easing.Bounce.Out)
+      .to({ y: item.y+200 }, 1000 + Math.random() * 3000, Phaser.Easing.Bounce.Out);
+      //bounce.onComplete.add(this.spawnCarrot, this)
+      bounce.loop();
+      bounce.start();
     },
     startFrontYard: function() {
+      console.log("foo");
       this.game.state.start('frontyard');
     }
   };
 module.exports = VeggiePatch;
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 'use strict';
   function Walkingout() {}
   Walkingout.prototype = {
