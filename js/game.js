@@ -59,9 +59,14 @@ module.exports = Stone;
   function Afterbikelane() {}
   Afterbikelane.prototype = {
     create: function() {
-      this.add.button(0, 0, 'after_bike_lane', this.startIceCream, this);
+      this.add.sprite(0, 0, 'after_bikelane_bg');
+      this.add.button(0, 104, 'after_bikelane_playground', this.startTrampoline);
+      this.add.button(614, 15, 'after_bikelane_icecream', this.startIceCream);
     },
     startIceCream: function() {
+      this.game.state.start('iceCream');
+    },
+    startTrampoline: function() {
       this.game.state.start('trampoline');
     }
   };
@@ -355,7 +360,7 @@ Menu.prototype = {
     }*/
   },
   startClick: function() {
-    this.game.state.start('veggiePatch');
+    this.game.state.start('afterbikelane');
   },
   startYellow: function() {
     this.game.state.start('thinking');
@@ -422,7 +427,6 @@ Preload.prototype = {
       // Cutscene assets
       this.load.image('thinking', 'assets/Animation_Stills/S3_Thinking.png');
       this.load.image('walking_out_house', 'assets/Animation_Stills/S5_WalkingOutHouse.png');
-      this.load.image('after_bike_lane', 'assets/PlayG_IceCream/PlayG_IceCream_Visual.png');
       this.load.image('trampoline_bg', 'assets/Animation_Stills/S7_Trampoline.png');
 
       // Mini game placeholders
@@ -478,6 +482,11 @@ Preload.prototype = {
       this.load.audio('collision_sound', 'assets/sounds/collision.wav');
       this.load.image('bikelane_left_button', 'assets/BikeLane/BikeLane_ButtonLeft.png');
       this.load.image('bikelane_right_button', 'assets/BikeLane/BikeLane_ButtonRight.png');
+
+      // After bike lane
+      this.load.image('after_bikelane_playground', 'assets/PlayG_IceCream/Playground.png');
+      this.load.image('after_bikelane_icecream', 'assets/PlayG_IceCream/PlayG_IceCreamStall.png');
+      this.load.image('after_bikelane_bg', 'assets/PlayG_IceCream/PlayG_IceCreamBG.png');      
 
       console.log("Yo dawg. Preloader preloaded.");
 
