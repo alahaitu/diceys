@@ -581,7 +581,7 @@ module.exports = VeggieGameWin;
       this.carrot.events.onInputDown.add(this.clickCarrot, this);
       this.tomato.events.onInputDown.add(this.clickTomato, this);
 
-      this.popSound = this.add.audio('picking_sound');
+      this.popSound = this.add.audio('helmet_on_sound');
       //this.popSound.volume = -0.5;
 
     },
