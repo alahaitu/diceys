@@ -18,13 +18,14 @@ window.onload = function () {
   game.state.add('preload', require('./states/preload'));
   game.state.add('thinking', require('./states/thinking'));
   game.state.add('trampoline', require('./states/trampoline'));
+  game.state.add('veggieGameWin', require('./states/veggieGameWin'));
   game.state.add('veggiePatch', require('./states/veggiePatch'));
   game.state.add('walkingout', require('./states/walkingout'));
   
 
   game.state.start('boot');
 };
-},{"./states/afterbikelane":3,"./states/bikelane":4,"./states/boot":5,"./states/frontyard":6,"./states/gameover":7,"./states/home":8,"./states/iceCream":9,"./states/menu":10,"./states/play":11,"./states/preload":12,"./states/thinking":13,"./states/trampoline":14,"./states/veggiePatch":15,"./states/walkingout":16}],2:[function(require,module,exports){
+},{"./states/afterbikelane":3,"./states/bikelane":4,"./states/boot":5,"./states/frontyard":6,"./states/gameover":7,"./states/home":8,"./states/iceCream":9,"./states/menu":10,"./states/play":11,"./states/preload":12,"./states/thinking":13,"./states/trampoline":14,"./states/veggieGameWin":15,"./states/veggiePatch":16,"./states/walkingout":17}],2:[function(require,module,exports){
 'use strict';
 
 var Stone = function(game, x, y, frame, speed) {
@@ -78,9 +79,7 @@ var Stone = require('../prefabs/stone');
       isColliding = false;
 
       this.game.physics.startSystem(Phaser.Physics.ARCADE);
-
       this.add.sprite(0, 0, 'bikelane_bg');
-
 
       // Scrolling stones      
       this.stone1 = new Stone(this.game, 642, 0, 1, this.speed);
@@ -306,7 +305,7 @@ module.exports = GameOver;
     create: function() {
       this.add.sprite(0, 0, 'home_bg');
       this.add.sprite(45, 465, 'home_bag');
-      this.add.button(220, 83, 'home_door', this.startWalkingOutHouse, this);
+      this.add.button(220, 70, 'home_door', this.startWalkingOutHouse, this);
       this.add.sprite(764, 63, 'home_cupboard');
       this.add.sprite(368, 185, 'home_alien');
       this.doorsound = this.add.audio('home_door_open');
@@ -464,6 +463,7 @@ Preload.prototype = {
       this.load.image('veggiep_slice2', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Slice2.png');
       this.load.image('veggiep_slice3', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Slice3.png');
       this.load.image('veggiep_slice4', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Slice4.png');
+      this.load.image('veggie_game_win', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Win.png');
       this.load.audio('picking_sound', 'assets/sounds/picking_veggie.wav');
 
       // Bike lane assets
@@ -525,6 +525,20 @@ module.exports = Trampoline;
 
 },{}],15:[function(require,module,exports){
 'use strict';
+  function VeggieGameWin() {}
+  VeggieGameWin.prototype = {
+    create: function() {
+      this.add.button(0, 0, 'veggie_game_win', this.startFrontYard, this);
+      this.game.time.events.add(Phaser.Timer.SECOND * 3, this.startFrontYard, this);
+    },
+    startFrontYard: function() {
+      this.game.state.start('frontyard');
+    }
+  };
+module.exports = VeggieGameWin;
+
+},{}],16:[function(require,module,exports){
+'use strict';
   function VeggiePatch() {}
   VeggiePatch.prototype = {
     create: function() {
@@ -567,27 +581,41 @@ module.exports = Trampoline;
       this.carrot.events.onInputDown.add(this.clickCarrot, this);
       this.tomato.events.onInputDown.add(this.clickTomato, this);
 
-      this.popSound = this.add.audio('helmet_on_sound');
+      this.popSound = this.add.audio('picking_sound');
+      this.popSound.volume = -0.5;
 
     },
     update: function() {
+      if (this.scorePointer.x > 865) {
+         this.game.state.start('veggieGameWin');
+      }
     },
-    spawnCarrot: function() {
+    resetPotato: function() {
+      this.potato.reset(150, 367);
+    },
+    resetCarrot: function() {
+      this.carrot.reset(674, 187);
+    },
+    resetTomato: function() {
+      this.tomato.reset(414, 518);
     },
     clickPotato: function() {
       this.popSound.play();
-      this.potato.kill();
       this.scorePointer.x += 50;
+      this.potato.kill();
+      this.game.time.events.add(Phaser.Timer.SECOND * 4, this.resetPotato, this);
     },
     clickCarrot: function() {
       this.popSound.play();
       this.carrot.kill();
       this.scorePointer.x += 50;
+      this.game.time.events.add(Phaser.Timer.SECOND * 4, this.resetCarrot, this);
     },
     clickTomato: function() {
       this.popSound.play();
       this.tomato.kill();
       this.scorePointer.x += 50;
+      this.game.time.events.add(Phaser.Timer.SECOND * 4, this.resetTomato, this);
     },
     bounceCarrot: function(item) {
       var bounce = this.game.add.tween(item);
@@ -604,7 +632,7 @@ module.exports = Trampoline;
   };
 module.exports = VeggiePatch;
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
   function Walkingout() {}
   Walkingout.prototype = {
