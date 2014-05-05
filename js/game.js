@@ -15,9 +15,11 @@ window.onload = function () {
   game.state.add('iceCream', require('./states/iceCream'));
   game.state.add('menu', require('./states/menu'));
   game.state.add('play', require('./states/play'));
+  game.state.add('playground', require('./states/playground'));
   game.state.add('preload', require('./states/preload'));
   game.state.add('thinking', require('./states/thinking'));
   game.state.add('trampoline', require('./states/trampoline'));
+  game.state.add('trampolineCutscene', require('./states/trampolineCutscene'));
   game.state.add('veggieGameWin', require('./states/veggieGameWin'));
   game.state.add('veggiePatch', require('./states/veggiePatch'));
   game.state.add('walkingout', require('./states/walkingout'));
@@ -25,7 +27,7 @@ window.onload = function () {
 
   game.state.start('boot');
 };
-},{"./states/afterbikelane":3,"./states/bikelane":4,"./states/boot":5,"./states/frontyard":6,"./states/gameover":7,"./states/home":8,"./states/iceCream":9,"./states/menu":10,"./states/play":11,"./states/preload":12,"./states/thinking":13,"./states/trampoline":14,"./states/veggieGameWin":15,"./states/veggiePatch":16,"./states/walkingout":17}],2:[function(require,module,exports){
+},{"./states/afterbikelane":3,"./states/bikelane":4,"./states/boot":5,"./states/frontyard":6,"./states/gameover":7,"./states/home":8,"./states/iceCream":9,"./states/menu":10,"./states/play":11,"./states/playground":12,"./states/preload":13,"./states/thinking":14,"./states/trampoline":15,"./states/trampolineCutscene":16,"./states/veggieGameWin":17,"./states/veggiePatch":18,"./states/walkingout":19}],2:[function(require,module,exports){
 'use strict';
 
 var Stone = function(game, x, y, frame, speed) {
@@ -67,7 +69,7 @@ module.exports = Stone;
       this.game.state.start('iceCream');
     },
     startTrampoline: function() {
-      this.game.state.start('trampoline');
+      this.game.state.start('playground');
     }
   };
 module.exports = Afterbikelane;
@@ -237,9 +239,13 @@ module.exports = Boot;
 
       this.helmetAnim = this.helmet.animations.add('swing');
 
-      this.patch = this.add.sprite(849, 353, 'frontyard_patch');
+      this.patch = this.add.sprite(844, 380, 'patch_bg');
       this.patch.inputEnabled = true;
       this.patch.events.onInputDown.add(this.startVeggiePatch, this);
+
+      this.carrot = this.add.sprite(844, 380, 'jumping_carrot', 1);
+      this.carrotAnim = this.carrot.animations.add('jump');
+      this.carrotAnimation();
       
       this.alien = this.add.sprite(470, 91, 'frontyard_alien');
 
@@ -263,11 +269,15 @@ module.exports = Boot;
         this.helmetAnim.stop;
         this.branchsound.play();
     },
+    carrotAnimation: function(){
+      this.carrotAnim.play(13, true);
+    },
     wearHelmet: function(){
       this.helmet.kill();
       this.helmetsound.play();
       this.alien.y = 159;
       this.alien.loadTexture('frontyard_alien_helmet', 0);
+      this.bicycle.loadTexture('frontyard_bicycle_active');
       //this.add.button(873, 614, 'frontyard_button', this.startBikeLane, this);
       this.bicycle.events.onInputDown.remove(this.helmetAnimation, this);
       this.bicycle.events.onInputDown.add(this.startBikeLane, this);
@@ -360,7 +370,7 @@ Menu.prototype = {
     }*/
   },
   startClick: function() {
-    this.game.state.start('afterbikelane');
+    this.game.state.start('trampoline');
   },
   startYellow: function() {
     this.game.state.start('thinking');
@@ -397,6 +407,28 @@ module.exports = Menu;
   
   module.exports = Play;
 },{}],12:[function(require,module,exports){
+'use strict';
+  function Playground() {}
+  Playground.prototype = {
+    create: function() {
+      this.add.sprite(0, 0, 'playground_bg');
+      this.add.button(509, 130, 'playground_trampoline', this.startTrampolineGame);
+      this.add.button(195, 40, 'playground_kite', this.startKite);
+      this.add.button(0, 205, 'playground_elephant', this.startElephant);
+    },
+    startKite: function() {
+      console.log("start kite");
+    },
+    startElephant: function() {
+      console.log("start elephant");
+    },
+    startTrampolineGame: function() {
+      this.game.state.start('trampolineCutscene');
+    }
+  };
+module.exports = Playground;
+
+},{}],13:[function(require,module,exports){
 
 'use strict';
 function Preload() {
@@ -415,6 +447,7 @@ Preload.prototype = {
       this.load.image('yeoman', 'assets/yeoman-logo.png');
 
       // Preload assets
+
       // Main menu assets
       this.load.image('menu_bg', 'assets/TitlePage/TitlePage_BG.png');
       this.load.image('green', 'assets/TitlePage/TitlePage_AlienGreenRV1.png');
@@ -423,11 +456,19 @@ Preload.prototype = {
       this.load.image('button', 'assets/TitlePage/TitlePage_PlayStoryRV1.png');
       this.load.image('blue', 'assets/TitlePage/TitlePage_AlienBlueRV1.png');
       this.load.image('purple', 'assets/TitlePage/TitlePage_AlienPurpleRV1.png');
+      this.load.image('back_button', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_BackButton.png');
+
+      // Common assets
+      this.load.image('score_meter', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_ScoreMeter.png');
+      this.load.image('score_pointer', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_ScorePointer.png');
+      this.load.image('score_basket', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_ScoreBasket.png');
+      this.load.image('exit_btn', 'assets/Playground/Trampoline/TrampolineG_xButton.png');
       
       // Cutscene assets
-      this.load.image('thinking', 'assets/Animation_Stills/S3_Thinking.png');
+      this.load.image('thinking', 'assets/CutScene_Thinking/Thinking_BG.png');
+      this.load.spritesheet('fwd_button', 'assets/CutScene_Thinking/Thinking_ButtonSprite.png', 150, 150, 1);
+      //this.load.image('close_btn', 'assets/CutScene_Thinking/FrontYard_xButton.png');
       this.load.image('walking_out_house', 'assets/Animation_Stills/S5_WalkingOutHouse.png');
-      this.load.image('trampoline_bg', 'assets/Animation_Stills/S7_Trampoline.png');
 
       // Mini game placeholders
       this.load.image('veggie_patch_ph', 'assets/FrontYard/MiniGames/VeggiePatch.png');
@@ -444,6 +485,7 @@ Preload.prototype = {
       // Front yard assets
       this.load.image('frontyard_bg', 'assets/FrontYard/FrontYard_BG_RV1.png');
       this.load.image('frontyard_bicycle', 'assets/FrontYard/FrontYard_Bicycle.png');
+      this.load.image('frontyard_bicycle_active', 'assets/FrontYard/FrontYard_Bicycle_White.png');
       this.load.image('frontyard_patch', 'assets/FrontYard/FrontYard_VeggiePatch.png');
       this.load.image('frontyard_alien', 'assets/FrontYard/FrontYard_AlienNoHelmet.png');
       this.load.image('frontyard_alien_helmet', 'assets/FrontYard/FrontYard_AlienWithHelmet.png');
@@ -453,16 +495,14 @@ Preload.prototype = {
       this.load.audio('helmet_on_sound', 'assets/sounds/helmet_on.wav');
       this.load.audio('branch1_sound', 'assets/sounds/branch1.wav');
       this.load.audio('bicycle_bell_sound', 'assets/sounds/bicycle_bell.wav');
+      this.load.image('patch_bg', '/assets/FrontYard/CarrotSprite_BG.png');
+      this.load.spritesheet('jumping_carrot', 'assets/FrontYard/CarrotSprite_Animate.png', 180, 300, 18);
 
       // Veggie patch mini game assets
       this.load.image('veggiep_bg', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Background.png');
-      this.load.image('veggiep_button', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_BackButton.png');
       this.load.image('veggiep_carrot', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Carrot.png');
       this.load.image('veggiep_potato', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Potato.png');
       this.load.image('veggiep_tomato', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Tomato.png');
-      this.load.image('veggiep_score_meter', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_ScoreMeter.png');
-      this.load.image('veggiep_score_pointer', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_ScorePointer.png');
-      this.load.image('veggiep_score_basket', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_ScoreBasket.png');
       this.load.image('veggiep_slice1', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Slice1.png');
       this.load.image('veggiep_slice2', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Slice2.png');
       this.load.image('veggiep_slice3', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Slice3.png');
@@ -486,7 +526,29 @@ Preload.prototype = {
       // After bike lane
       this.load.image('after_bikelane_playground', 'assets/PlayG_IceCream/Playground.png');
       this.load.image('after_bikelane_icecream', 'assets/PlayG_IceCream/PlayG_IceCreamStall.png');
-      this.load.image('after_bikelane_bg', 'assets/PlayG_IceCream/PlayG_IceCreamBG.png');      
+      this.load.image('after_bikelane_bg', 'assets/PlayG_IceCream/PlayG_IceCreamBG.png');
+
+      // Trampoline cutscene
+      this.load.image('trampoline_bg', 'assets/CutScene_Trampoline/Trampoline_BG.png');
+      this.load.image('trampoline_front', 'assets/CutScene_Trampoline/Trampoline_Half_Front.png');
+      this.load.image('trampoline_back', 'assets/CutScene_Trampoline/Trampoline_Half_Back.png');
+      this.load.spritesheet('trampoline_jumping', 'assets/CutScene_Trampoline/Trampoline_JumpSprite.png', 300, 560, 15);
+
+      // Playground
+      this.load.image('playground_bg', 'assets/Playground/PlayG/PlayG_BG.png');
+      this.load.image('playground_elephant', 'assets/Playground/PlayG/PlayG_Elephant.png');
+      this.load.image('playground_kite', 'assets/Playground/PlayG/PlayG_Kite.png');
+      this.load.image('playground_trampoline', 'assets/Playground/PlayG/PlayG_Trampoline.png');
+
+      // Trampoline game
+      this.load.image('trampoline_game_bg', 'assets/Playground/Trampoline/TrampolineG_BG.png');
+      this.load.image('trampoline_game_alien', 'assets/Playground/Trampoline/TrampolineG_Alien.png');
+      this.load.image('trampoline_game_bee', 'assets/Playground/Trampoline/TrampolineG_Bee.png');
+      this.load.image('trampoline_game_cherry', 'assets/Playground/Trampoline/TrampolineG_Cherries.png');
+      this.load.image('trampoline_game_grape', 'assets/Playground/Trampoline/TrampolineG_Grapes.png');
+      this.load.image('trampoline_game_strawberry', 'assets/Playground/Trampoline/TrampolineG_Strawberry.png');
+      this.load.image('trampoline_game_jump_button', 'assets/Playground/Trampoline/TrampolineG_JumpButton.png');  
+      this.load.audio('bee_sound', 'assets/sounds/bee_buzzing.mp3');    
 
       console.log("Yo dawg. Preloader preloaded.");
 
@@ -506,12 +568,13 @@ Preload.prototype = {
 
 module.exports = Preload;
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 'use strict';
   function Thinking() {}
   Thinking.prototype = {
     create: function() {
-      this.add.button(0, 0, 'thinking', this.startClick, this);
+      this.add.sprite(0, 0, 'thinking');
+      this.add.button(850, 600, 'fwd_button', this.startClick, this);
     },
     startClick: function() {
       this.game.state.start('home');
@@ -519,20 +582,117 @@ module.exports = Preload;
   };
 module.exports = Thinking;
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict';
   function Trampoline() {}
   Trampoline.prototype = {
     create: function() {
-      this.add.button(0, 0, 'trampoline_bg', this.startAfterBikelane, this);
+      this.add.button(0, 0, 'trampoline_game_bg', this.startAfterBikelane, this);
+      this.bee = this.add.sprite(1024, 80, 'trampoline_game_bee');
+      this.cherry = this.add.sprite(400, 140, 'trampoline_game_cherry');
+      this.strawberry = this.add.sprite(600, 140, 'trampoline_game_strawberry');
+      this.grape = this.add.sprite(800, 140, 'trampoline_game_grape');
+      this.player = this.add.sprite(426, 502, 'trampoline_game_alien');
+      this.add.sprite(119, 38, 'score_meter');
+      this.scorePointer = this.add.sprite(114, 21, 'score_pointer');
+      this.add.sprite(40, 35, 'score_basket');
+      this.add.sprite(850, 590, 'trampoline_game_jump_button');
+      this.add.sprite(899, 23, 'exit_btn');    
+
+      this.beeSound = this.add.audio('bee_sound');
+      this.popSound = this.add.audio('helmet_on_sound');
+
+      this.game.physics.startSystem(Phaser.Physics.ARCADE);
+      this.game.physics.enable([this.player, this.bee, this.cherry, this.strawberry, this.grape]);
+      this.player.body.velocity.setTo(200, 200);
+      this.player.body.collideWorldBounds = true;
+      this.player.body.bounce.set(0.8);
+      this.player.body.gravity.set(0, 180);
+
+      this.player.body.immovable = true;
+      this.bee.body.immovable = true;
+
+    },
+    update: function() {
+      if (this.bee.x > 0-this.bee.width) {
+        this.bee.x -= 3;
+      }
+      else {
+        this.game.time.events.add(Phaser.Timer.SECOND * this.game.rnd.integerInRange(0.5, 1.5), this.resetBee, this);
+      }
+
+      this.game.physics.arcade.collide(this.player, this.bee, this.beeCollision, null, this);
+      this.game.physics.arcade.collide(this.player, this.cherry, this.pickCherry, null, this);
+      this.game.physics.arcade.collide(this.player, this.strawberry, this.pickStrawberry, null, this);
+      this.game.physics.arcade.collide(this.player, this.grape, this.pickGrape, null, this);
+
+      
+    },
+    pickCherry: function() {
+      this.popSound.play();
+      this.scorePointer.x += 28;
+      this.cherry.kill();
+      this.game.time.events.add(Phaser.Timer.SECOND * 3, this.resetCherry, this);
+    },
+    pickStrawberry: function() {
+      this.popSound.play();
+      this.scorePointer.x += 28;
+      this.strawberry.kill();
+      this.game.time.events.add(Phaser.Timer.SECOND * 3, this.resetStrawberry, this);
+    },
+    pickGrape: function() {
+      this.popSound.play();
+      this.scorePointer.x += 28;
+      this.grape.kill();
+      this.game.time.events.add(Phaser.Timer.SECOND * 3, this.resetGrape, this);
+    },
+    resetCherry: function() {
+      this.cherry.reset(this.game.rnd.integerInRange(0, 1024-this.cherry.body.width), this.game.rnd.integerInRange(140, 400));
+    },
+    resetStrawberry: function() {
+      this.strawberry.reset(this.game.rnd.integerInRange(0, 1024-this.strawberry.body.width), 140);
+    },
+    resetGrape: function() {
+      this.grape.reset(this.game.rnd.integerInRange(0, 1024-this.grape.body.width), 140);
+    },
+    beeCollision: function() {
+      console.log("sting!");
+    },
+    resetBee: function() {
+      this.bee.reset(1024, this.game.rnd.integerInRange(100, 400));
+      //this.beeSound.play();
     },
     startAfterBikelane: function() {
-      this.game.state.start('afterbikelane');
+      this.player.body.velocity.y = 600;
+      //this.player.body.velocity.x = this.game.rnd.integerInRange(-100, 100)
     }
   };
 module.exports = Trampoline;
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
+'use strict';
+  function TrampolineCutscene() {}
+  TrampolineCutscene.prototype = {
+    create: function() {
+      this.add.sprite(0, 0, 'trampoline_bg');
+      this.add.sprite(93, 110, 'trampoline_back');
+      this.jumping = this.add.sprite(250, 0, 'trampoline_jumping', 1);
+      this.add.sprite(93, 100, 'trampoline_front');
+      this.add.button(850, 600, 'fwd_button', this.startTrampoline, this);
+
+      this.jumpingAnim = this.jumping.animations.add('jumps');
+      this.jumpingAnimation();
+    },
+    jumpingAnimation: function(){
+      this.jumpingAnim.play(16, true);
+    },
+    startTrampoline: function() {
+      this.game.state.start('trampoline');
+    }
+  };
+module.exports = TrampolineCutscene;
+
+},{}],17:[function(require,module,exports){
 'use strict';
   function VeggieGameWin() {}
   VeggieGameWin.prototype = {
@@ -548,7 +708,7 @@ module.exports = Trampoline;
   };
 module.exports = VeggieGameWin;
 
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 'use strict';
   function VeggiePatch() {}
   VeggiePatch.prototype = {
@@ -561,10 +721,10 @@ module.exports = VeggieGameWin;
       this.add.sprite(0, 438, 'veggiep_slice3');
       this.tomato = this.add.sprite(105, 518, 'veggiep_tomato');
       this.add.sprite(0, 618, 'veggiep_slice4');
-      this.backButton = this.add.button(40, 20, 'veggiep_button' , this.startFrontYard, this);
-      this.add.sprite(205, 20, 'veggiep_score_basket');
-      this.add.sprite(275, 30, 'veggiep_score_meter');
-      this.scorePointer = this.add.sprite(270, 24, 'veggiep_score_pointer');
+      this.backButton = this.add.button(40, 20, 'back_button' , this.startFrontYard, this);
+      this.add.sprite(205, 20, 'score_basket');
+      this.add.sprite(275, 30, 'score_meter');
+      this.scorePointer = this.add.sprite(270, 24, 'score_pointer');
       /*this.add.sprite(65, 26, 'veggiep_score_carrot1');
       this.add.sprite(150, 40, 'veggiep_score_carrot2');
       this.add.sprite(315, 52, 'veggiep_score_potato1');
@@ -651,13 +811,13 @@ module.exports = VeggieGameWin;
   };
 module.exports = VeggiePatch;
 
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 'use strict';
   function Walkingout() {}
   Walkingout.prototype = {
     create: function() {
-      this.add.button(0, 0, 'walking_out_house', this.startFrontYard, this);
-      this.game.time.events.add(Phaser.Timer.SECOND * 3, this.startFrontYard, this);
+      this.add.sprite(0, 0, 'walking_out_house');
+      this.game.time.events.add(Phaser.Timer.SECOND * 2.5, this.startFrontYard, this);
     },
     startFrontYard: function() {
       this.game.state.start('frontyard');
