@@ -1,5 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
+var music = null;
 
 //global variables
 window.onload = function () {
@@ -9,6 +10,8 @@ window.onload = function () {
   game.state.add('afterbikelane', require('./states/afterbikelane'));
   game.state.add('bikelane', require('./states/bikelane'));
   game.state.add('boot', require('./states/boot'));
+  game.state.add('cyclingOut', require('./states/cyclingOut'));
+  game.state.add('flyingKite', require('./states/flyingKite'));
   game.state.add('frontyard', require('./states/frontyard'));
   game.state.add('gameover', require('./states/gameover'));
   game.state.add('home', require('./states/home'));
@@ -20,6 +23,7 @@ window.onload = function () {
   game.state.add('thinking', require('./states/thinking'));
   game.state.add('trampoline', require('./states/trampoline'));
   game.state.add('trampolineCutscene', require('./states/trampolineCutscene'));
+  game.state.add('trampolineGameWin', require('./states/trampolineGameWin'));
   game.state.add('veggieGameWin', require('./states/veggieGameWin'));
   game.state.add('veggiePatch', require('./states/veggiePatch'));
   game.state.add('walkingout', require('./states/walkingout'));
@@ -27,7 +31,7 @@ window.onload = function () {
 
   game.state.start('boot');
 };
-},{"./states/afterbikelane":3,"./states/bikelane":4,"./states/boot":5,"./states/frontyard":6,"./states/gameover":7,"./states/home":8,"./states/iceCream":9,"./states/menu":10,"./states/play":11,"./states/playground":12,"./states/preload":13,"./states/thinking":14,"./states/trampoline":15,"./states/trampolineCutscene":16,"./states/veggieGameWin":17,"./states/veggiePatch":18,"./states/walkingout":19}],2:[function(require,module,exports){
+},{"./states/afterbikelane":3,"./states/bikelane":4,"./states/boot":5,"./states/cyclingOut":6,"./states/flyingKite":7,"./states/frontyard":8,"./states/gameover":9,"./states/home":10,"./states/iceCream":11,"./states/menu":12,"./states/play":13,"./states/playground":14,"./states/preload":15,"./states/thinking":16,"./states/trampoline":17,"./states/trampolineCutscene":18,"./states/trampolineGameWin":19,"./states/veggieGameWin":20,"./states/veggiePatch":21,"./states/walkingout":22}],2:[function(require,module,exports){
 'use strict';
 
 var Stone = function(game, x, y, frame, speed) {
@@ -222,6 +226,26 @@ module.exports = Boot;
 
 },{}],6:[function(require,module,exports){
 'use strict';
+  function CyclingOut() {}
+  CyclingOut.prototype = {
+    create: function() {
+      this.add.sprite(0, 0, 'cycling_out_bg');
+    }
+  };
+module.exports = CyclingOut;
+
+},{}],7:[function(require,module,exports){
+'use strict';
+  function FlyingKite() {}
+  FlyingKite.prototype = {
+    create: function() {
+      this.add.sprite(0, 0, 'flying_kite_bg');
+    }
+  };
+module.exports = FlyingKite;
+
+},{}],8:[function(require,module,exports){
+'use strict';
   function Frontyard() {}
   Frontyard.prototype = {
     create: function () {
@@ -285,7 +309,7 @@ module.exports = Boot;
   };
 module.exports = Frontyard;
 
-},{}],7:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 
 'use strict';
 function GameOver() {}
@@ -313,7 +337,7 @@ GameOver.prototype = {
 };
 module.exports = GameOver;
 
-},{}],8:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict';
   function Home() {}
   Home.prototype = {
@@ -332,7 +356,7 @@ module.exports = GameOver;
   };
 module.exports = Home;
 
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
   function IceCream() {}
   IceCream.prototype = {
@@ -345,7 +369,7 @@ module.exports = Home;
   };
 module.exports = IceCream;
 
-},{}],10:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 
 'use strict';
 function Menu() {}
@@ -357,17 +381,16 @@ Menu.prototype = {
   create: function() {
     this.background = this.game.add.sprite(0, 0, 'menu_bg');
     this.add.sprite(79, 93, 'green');
-    var yellow = this.add.button(732, 57, 'yellow' , this.startYellow, this);
-    var button = this.add.button(457, 550, 'button', this.startClick, this);
-    //game.add.audio('menumusic', 1, true).play('', 0, 1, true);
     this.add.sprite(116, 187, 'title');
     this.add.sprite(721, 470, 'purple');
     this.add.sprite(132, 487, 'blue');
+    var yellow = this.add.button(732, 57, 'yellow' , this.startYellow, this);
+    var button = this.add.button(457, 550, 'button', this.startClick, this);
+    var music = this.add.audio('bg_music', 1);
+    music.play();
+
     },
   update: function() {
-    /*if(game.input.activePointer.justPressed()) {
-      game.state.start('play');
-    }*/
   },
   startClick: function() {
     this.game.state.start('trampoline');
@@ -379,7 +402,7 @@ Menu.prototype = {
 
 module.exports = Menu;
 
-},{}],11:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 
   'use strict';
   function Play() {}
@@ -406,7 +429,7 @@ module.exports = Menu;
   };
   
   module.exports = Play;
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 'use strict';
   function Playground() {}
   Playground.prototype = {
@@ -417,7 +440,7 @@ module.exports = Menu;
       this.add.button(0, 205, 'playground_elephant', this.startElephant);
     },
     startKite: function() {
-      console.log("start kite");
+      this.game.state.start('flyingKite');
     },
     startElephant: function() {
       console.log("start elephant");
@@ -428,7 +451,7 @@ module.exports = Menu;
   };
 module.exports = Playground;
 
-},{}],13:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 
 'use strict';
 function Preload() {
@@ -463,6 +486,8 @@ Preload.prototype = {
       this.load.image('score_pointer', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_ScorePointer.png');
       this.load.image('score_basket', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_ScoreBasket.png');
       this.load.image('exit_btn', 'assets/Playground/Trampoline/TrampolineG_xButton.png');
+      this.load.audio('bg_music', 'assets/sounds/Tukes_ background1.mp3');
+      this.load.audio('minigame_music', 'assets/sounds/Tukes_uptempo_minigame.mp3');
       
       // Cutscene assets
       this.load.image('thinking', 'assets/CutScene_Thinking/Thinking_BG.png');
@@ -510,6 +535,10 @@ Preload.prototype = {
       this.load.image('veggie_game_win', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Win.png');
       this.load.audio('applause_sound', 'assets/sounds/applause.wav');
 
+      // Cycling out
+      this.load.image('cycling_out_bg', 'assets/CutScene_CyclingOut/CyclingOut_BG.png');
+      this.load.image('cycling_out_alien', 'assets/CutScene_CyclingOut/CyclingOut_Alien.png');
+
       // Bike lane assets
       this.load.image('bikelane_bg', 'assets/BikeLane/BikeLane_BG.png');
       this.load.image('bikelane_alien', 'assets/BikeLane/BikeLane_Alien.png');
@@ -548,7 +577,11 @@ Preload.prototype = {
       this.load.image('trampoline_game_grape', 'assets/Playground/Trampoline/TrampolineG_Grapes.png');
       this.load.image('trampoline_game_strawberry', 'assets/Playground/Trampoline/TrampolineG_Strawberry.png');
       this.load.image('trampoline_game_jump_button', 'assets/Playground/Trampoline/TrampolineG_JumpButton.png');  
-      this.load.audio('bee_sound', 'assets/sounds/bee_buzzing.mp3');    
+      this.load.audio('bee_sound', 'assets/sounds/bee_buzzing.mp3');
+      this.load.image('trampoline_game_win', 'assets/Playground/Trampoline/TrampolineG_Win.png');
+
+      // Flying kite cutscene
+      this.load.image('flying_kite_bg', 'assets/End_FlyingKite/FlyingKite.png');
 
       console.log("Yo dawg. Preloader preloaded.");
 
@@ -568,7 +601,7 @@ Preload.prototype = {
 
 module.exports = Preload;
 
-},{}],14:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 'use strict';
   function Thinking() {}
   Thinking.prototype = {
@@ -582,22 +615,22 @@ module.exports = Preload;
   };
 module.exports = Thinking;
 
-},{}],15:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
   function Trampoline() {}
   Trampoline.prototype = {
     create: function() {
-      this.add.button(0, 0, 'trampoline_game_bg', this.startAfterBikelane, this);
-      this.bee = this.add.sprite(1024, 80, 'trampoline_game_bee');
+      this.add.sprite(0, 0, 'trampoline_game_bg');
       this.cherry = this.add.sprite(400, 140, 'trampoline_game_cherry');
       this.strawberry = this.add.sprite(600, 140, 'trampoline_game_strawberry');
       this.grape = this.add.sprite(800, 140, 'trampoline_game_grape');
       this.player = this.add.sprite(426, 502, 'trampoline_game_alien');
+      this.bee = this.add.sprite(1024, 80, 'trampoline_game_bee');
       this.add.sprite(119, 38, 'score_meter');
       this.scorePointer = this.add.sprite(114, 21, 'score_pointer');
       this.add.sprite(40, 35, 'score_basket');
-      this.add.sprite(850, 590, 'trampoline_game_jump_button');
-      this.add.sprite(899, 23, 'exit_btn');    
+      this.add.button(850, 590, 'trampoline_game_jump_button', this.playerJump, this);
+      this.add.button(899, 23, 'exit_btn', this.exitScene, this);    
 
       this.beeSound = this.add.audio('bee_sound');
       this.popSound = this.add.audio('helmet_on_sound');
@@ -626,7 +659,9 @@ module.exports = Thinking;
       this.game.physics.arcade.collide(this.player, this.strawberry, this.pickStrawberry, null, this);
       this.game.physics.arcade.collide(this.player, this.grape, this.pickGrape, null, this);
 
-      
+      if (this.scorePointer.x > 672) {
+         this.game.state.start('trampolineGameWin');
+      }      
     },
     pickCherry: function() {
       this.popSound.play();
@@ -662,14 +697,17 @@ module.exports = Thinking;
       this.bee.reset(1024, this.game.rnd.integerInRange(100, 400));
       //this.beeSound.play();
     },
-    startAfterBikelane: function() {
+    playerJump: function() {
       this.player.body.velocity.y = 600;
       //this.player.body.velocity.x = this.game.rnd.integerInRange(-100, 100)
+    },
+    exitScene: function() {
+      this.game.state.start('playground');
     }
   };
 module.exports = Trampoline;
 
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 'use strict';
   function TrampolineCutscene() {}
   TrampolineCutscene.prototype = {
@@ -692,12 +730,28 @@ module.exports = Trampoline;
   };
 module.exports = TrampolineCutscene;
 
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
+'use strict';
+  function TrampolineGameWin() {}
+  TrampolineGameWin.prototype = {
+    create: function() {
+      this.add.sprite(0, 0, 'veggie_game_win');
+      this.applauseSound = this.add.audio('applause_sound');
+      this.game.time.events.add(Phaser.Timer.SECOND * 3, this.startPlayground, this);
+      this.applauseSound.play();
+    },
+    startPlayground: function() {
+      this.game.state.start('playground');
+    }
+  };
+module.exports = TrampolineGameWin;
+
+},{}],20:[function(require,module,exports){
 'use strict';
   function VeggieGameWin() {}
   VeggieGameWin.prototype = {
     create: function() {
-      this.add.button(0, 0, 'veggie_game_win', this.startFrontYard, this);
+      this.add.sprite(0, 0, 'veggie_game_win');
       this.applauseSound = this.add.audio('applause_sound');
       this.game.time.events.add(Phaser.Timer.SECOND * 3, this.startFrontYard, this);
       this.applauseSound.play();
@@ -708,7 +762,7 @@ module.exports = TrampolineCutscene;
   };
 module.exports = VeggieGameWin;
 
-},{}],18:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 'use strict';
   function VeggiePatch() {}
   VeggiePatch.prototype = {
@@ -754,6 +808,9 @@ module.exports = VeggieGameWin;
 
       this.popSound = this.add.audio('helmet_on_sound');
       //this.popSound.volume = -0.5;
+
+      /*var mgMusic = this.add.audio('minigame_music', 1);
+      mgMusic.play();*/
 
     },
     update: function() {
@@ -811,7 +868,7 @@ module.exports = VeggieGameWin;
   };
 module.exports = VeggiePatch;
 
-},{}],19:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 'use strict';
   function Walkingout() {}
   Walkingout.prototype = {
