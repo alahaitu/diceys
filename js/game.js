@@ -516,11 +516,11 @@ Preload.prototype = {
       this.load.image('frontyard_alien_helmet', 'assets/FrontYard/FrontYard_AlienWithHelmet.png');
       this.load.image('frontyard_tree', 'assets/FrontYard/FrontYard_Tree.png');
       this.load.image('frontyard_button', 'assets/FrontYard/FrontYard_BicycleButton.png');
+      this.load.image('patch_bg', 'assets/FrontYard/CarrotSprite_BG.png');
       this.load.spritesheet('frontyard_helmet_animation', 'assets/FrontYard/Helmet_SpriteMap.png', 150, 150, 9);
       this.load.audio('helmet_on_sound', 'assets/sounds/helmet_on.wav');
       this.load.audio('branch1_sound', 'assets/sounds/branch1.wav');
       this.load.audio('bicycle_bell_sound', 'assets/sounds/bicycle_bell.wav');
-      this.load.image('patch_bg', '/assets/FrontYard/CarrotSprite_BG.png');
       this.load.spritesheet('jumping_carrot', 'assets/FrontYard/CarrotSprite_Animate.png', 180, 300, 18);
 
       // Veggie patch mini game assets
