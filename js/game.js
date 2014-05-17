@@ -8,6 +8,7 @@ window.onload = function () {
 
   // Game States
   game.state.add('afterbikelane', require('./states/afterbikelane'));
+  game.state.add('bagGame', require('./states/bagGame'));
   game.state.add('bikelane', require('./states/bikelane'));
   game.state.add('boot', require('./states/boot'));
   game.state.add('cyclingOut', require('./states/cyclingOut'));
@@ -20,6 +21,7 @@ window.onload = function () {
   game.state.add('play', require('./states/play'));
   game.state.add('playground', require('./states/playground'));
   game.state.add('preload', require('./states/preload'));
+  game.state.add('story', require('./states/story'));
   game.state.add('thinking', require('./states/thinking'));
   game.state.add('trampoline', require('./states/trampoline'));
   game.state.add('trampolineCutscene', require('./states/trampolineCutscene'));
@@ -31,7 +33,7 @@ window.onload = function () {
 
   game.state.start('boot');
 };
-},{"./states/afterbikelane":3,"./states/bikelane":4,"./states/boot":5,"./states/cyclingOut":6,"./states/flyingKite":7,"./states/frontyard":8,"./states/gameover":9,"./states/home":10,"./states/iceCream":11,"./states/menu":12,"./states/play":13,"./states/playground":14,"./states/preload":15,"./states/thinking":16,"./states/trampoline":17,"./states/trampolineCutscene":18,"./states/trampolineGameWin":19,"./states/veggieGameWin":20,"./states/veggiePatch":21,"./states/walkingout":22}],2:[function(require,module,exports){
+},{"./states/afterbikelane":3,"./states/bagGame":4,"./states/bikelane":5,"./states/boot":6,"./states/cyclingOut":7,"./states/flyingKite":8,"./states/frontyard":9,"./states/gameover":10,"./states/home":11,"./states/iceCream":12,"./states/menu":13,"./states/play":14,"./states/playground":15,"./states/preload":16,"./states/story":17,"./states/thinking":18,"./states/trampoline":19,"./states/trampolineCutscene":20,"./states/trampolineGameWin":21,"./states/veggieGameWin":22,"./states/veggiePatch":23,"./states/walkingout":24}],2:[function(require,module,exports){
 'use strict';
 
 var Stone = function(game, x, y, frame, speed) {
@@ -80,6 +82,19 @@ module.exports = Afterbikelane;
 
 },{}],4:[function(require,module,exports){
 'use strict';
+  function BagGame() {}
+  BagGame.prototype = {
+    create: function() {
+      this.add.button(0, 0, 'bag_game_ph', this.startHome, this);
+    },
+    startHome: function() {
+      this.game.state.start('home');
+    }
+  };
+module.exports = BagGame;
+
+},{}],5:[function(require,module,exports){
+'use strict';
 var Stone = require('../prefabs/stone');
   function Bikelane() {}
   var speed = 4;
@@ -115,7 +130,7 @@ var Stone = require('../prefabs/stone');
       this.cursors = this.game.input.keyboard.createCursorKeys();
 
       // Timer setup
-      this.game.time.events.add(Phaser.Timer.SECOND * 15, this.afterBikelane, this);
+      this.game.time.events.add(Phaser.Timer.SECOND * 30, this.afterBikelane, this);
 
       this.leftButton = this.add.button(25, 304, 'bikelane_left_button', this.moveLeft, this);
       this.rightButton = this.add.button(840, 304, 'bikelane_right_button', this.moveRight, this);
@@ -144,12 +159,12 @@ var Stone = require('../prefabs/stone');
     },
     moveLeft: function() {
       if (this.player.x > 190+(this.player.width/2)) {
-        this.player.x = this.player.x - 25;
+        this.game.add.tween(this.player).to( { x: this.player.x - 25 }, 240, Phaser.Easing.Linear.None, true);
       }
     },
     moveRight: function() {
       if (this.player.x < 834-(this.player.width/2)) {
-        this.player.x = this.player.x + 25;
+        this.game.add.tween(this.player).to( { x: this.player.x + 25 }, 240, Phaser.Easing.Linear.None, true);
       }
     },
     collisionHandler: function (obj1, obj2) {
@@ -165,7 +180,7 @@ var Stone = require('../prefabs/stone');
     }
   };
 module.exports = Bikelane;
-},{"../prefabs/stone":2}],5:[function(require,module,exports){
+},{"../prefabs/stone":2}],6:[function(require,module,exports){
 
 'use strict';
 
@@ -224,38 +239,51 @@ Boot.prototype = {
 
 module.exports = Boot;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict';
   function CyclingOut() {}
   CyclingOut.prototype = {
     create: function() {
       this.add.sprite(0, 0, 'cycling_out_bg');
+      this.cyclingAlien = this.add.sprite(410, 468, 'cycling_out_alien');
+      this.tween = this.game.add.tween(this.cyclingAlien).to( { y: 80 }, 2400, Phaser.Easing.Linear.None, true);
+
+    },
+    update: function() {
+      if (this.cyclingAlien.y < 81){
+        this.game.state.start('bikelane');
+      }
     }
   };
 module.exports = CyclingOut;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
   function FlyingKite() {}
   FlyingKite.prototype = {
     create: function() {
       this.add.sprite(0, 0, 'flying_kite_bg');
+      this.add.button(899, 23, 'exit_btn', this.exitScene, this);  
+    },
+    exitScene: function() {
+      this.game.state.start('menu');
     }
   };
 module.exports = FlyingKite;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
   function Frontyard() {}
   Frontyard.prototype = {
     create: function () {
       this.add.sprite(0, 0, 'frontyard_bg');
-      
+
       this.bicycle = this.add.sprite(54, 294, 'frontyard_bicycle');
       this.bicycle.inputEnabled = true;
       this.bicycle.events.onInputDown.add(this.helmetAnimation, this);
       
       this.add.sprite(0, 0, 'frontyard_tree');
+      this.add.sprite(439, 39, 'frontyard_nest');
       
       this.helmet = this.add.sprite(201, 150, 'frontyard_helmet_animation', 1);
       this.helmet.inputEnabled = true;
@@ -283,7 +311,7 @@ module.exports = FlyingKite;
     },
     startBikeLane: function(){
       this.bicyclesound.play();
-      this.game.state.start('bikelane');
+      this.game.state.start('cyclingOut');
     },
     startVeggiePatch: function() {
       this.game.state.start('veggiePatch');
@@ -309,7 +337,7 @@ module.exports = FlyingKite;
   };
 module.exports = Frontyard;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 
 'use strict';
 function GameOver() {}
@@ -337,13 +365,13 @@ GameOver.prototype = {
 };
 module.exports = GameOver;
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
   function Home() {}
   Home.prototype = {
     create: function() {
       this.add.sprite(0, 0, 'home_bg');
-      this.add.sprite(45, 465, 'home_bag');
+      this.add.button(45, 465, 'home_bag', this.startBagGame, this);
       this.add.button(220, 70, 'home_door', this.startWalkingOutHouse, this);
       this.add.sprite(764, 63, 'home_cupboard');
       this.add.sprite(368, 185, 'home_alien');
@@ -352,11 +380,14 @@ module.exports = GameOver;
     startWalkingOutHouse: function(){
       this.doorsound.play();
       this.game.state.start('walkingout');
+    },
+    startBagGame: function() {
+      this.game.state.start('bagGame');
     }
   };
 module.exports = Home;
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict';
   function IceCream() {}
   IceCream.prototype = {
@@ -369,7 +400,7 @@ module.exports = Home;
   };
 module.exports = IceCream;
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 
 'use strict';
 function Menu() {}
@@ -386,8 +417,6 @@ Menu.prototype = {
     this.add.sprite(132, 487, 'blue');
     var yellow = this.add.button(732, 57, 'yellow' , this.startYellow, this);
     var button = this.add.button(457, 550, 'button', this.startClick, this);
-    var music = this.add.audio('bg_music', 1);
-    music.play();
 
     },
   update: function() {
@@ -402,7 +431,7 @@ Menu.prototype = {
 
 module.exports = Menu;
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 
   'use strict';
   function Play() {}
@@ -429,12 +458,13 @@ module.exports = Menu;
   };
   
   module.exports = Play;
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict';
   function Playground() {}
   Playground.prototype = {
     create: function() {
       this.add.sprite(0, 0, 'playground_bg');
+      this.add.sprite(0, 572, 'playground_alien');
       this.add.button(509, 130, 'playground_trampoline', this.startTrampolineGame);
       this.add.button(195, 40, 'playground_kite', this.startKite);
       this.add.button(0, 205, 'playground_elephant', this.startElephant);
@@ -451,7 +481,7 @@ module.exports = Menu;
   };
 module.exports = Playground;
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 
 'use strict';
 function Preload() {
@@ -481,6 +511,20 @@ Preload.prototype = {
       this.load.image('purple', 'assets/TitlePage/TitlePage_AlienPurpleRV1.png');
       this.load.image('back_button', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_BackButton.png');
 
+      // Storyline assets
+      this.load.image('storyscene1', 'assets/DiceyLanding_Story/MTDiceys_1.png');
+      this.load.image('storyscene2', 'assets/DiceyLanding_Story/MTDiceys_2.png');
+      this.load.image('storyscene3', 'assets/DiceyLanding_Story/MTDiceys_3.png');
+      this.load.image('storyscene4', 'assets/DiceyLanding_Story/MTDiceys_4.png');
+      this.load.image('storyscene5', 'assets/DiceyLanding_Story/MTDiceys_5.png');
+      this.load.image('storyscene6', 'assets/DiceyLanding_Story/MTDiceys_6.png');
+      this.load.image('storyscene7', 'assets/DiceyLanding_Story/MTDiceys_7.png');
+      this.load.image('storyscene8', 'assets/DiceyLanding_Story/MTDiceys_8.png');
+      this.load.image('storyscene9', 'assets/DiceyLanding_Story/MTDiceys_9.png');
+      this.load.image('storyscene10', 'assets/DiceyLanding_Story/MTDiceys_10.png');
+      this.load.image('storyscene11', 'assets/DiceyLanding_Story/MTDiceys_11.png');
+      this.load.image('storyscene12', 'assets/DiceyLanding_Story/MTDiceys_12.png');
+
       // Common assets
       this.load.image('score_meter', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_ScoreMeter.png');
       this.load.image('score_pointer', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_ScorePointer.png');
@@ -491,13 +535,14 @@ Preload.prototype = {
       
       // Cutscene assets
       this.load.image('thinking', 'assets/CutScene_Thinking/Thinking_BG.png');
+      this.load.audio('thinking_sound', 'assets/sounds/Hmmm1.mp3');
       this.load.spritesheet('fwd_button', 'assets/CutScene_Thinking/Thinking_ButtonSprite.png', 150, 150, 1);
-      //this.load.image('close_btn', 'assets/CutScene_Thinking/FrontYard_xButton.png');
       this.load.image('walking_out_house', 'assets/Animation_Stills/S5_WalkingOutHouse.png');
 
       // Mini game placeholders
       this.load.image('veggie_patch_ph', 'assets/FrontYard/MiniGames/VeggiePatch.png');
       this.load.image('ice_cream_ph', 'assets/PlayG_IceCream/IceCream.png');
+      this.load.image('bag_game_ph', 'assets/GettingReadyAtHome/BagGame.png');
 
       // Getting Ready at Home assets
       this.load.image('home_bg', 'assets/GettingReadyAtHome/GettingReady_BG.png');
@@ -522,6 +567,7 @@ Preload.prototype = {
       this.load.audio('branch1_sound', 'assets/sounds/branch1.wav');
       this.load.audio('bicycle_bell_sound', 'assets/sounds/bicycle_bell.wav');
       this.load.spritesheet('jumping_carrot', 'assets/FrontYard/CarrotSprite_Animate.png', 180, 300, 18);
+      this.load.image('frontyard_nest', 'assets/FrontYard/FrontYard_BirdNest.png');
 
       // Veggie patch mini game assets
       this.load.image('veggiep_bg', 'assets/FrontYard/MiniGames/VeggiePatch/VeggieP_Background.png');
@@ -562,12 +608,14 @@ Preload.prototype = {
       this.load.image('trampoline_front', 'assets/CutScene_Trampoline/Trampoline_Half_Front.png');
       this.load.image('trampoline_back', 'assets/CutScene_Trampoline/Trampoline_Half_Back.png');
       this.load.spritesheet('trampoline_jumping', 'assets/CutScene_Trampoline/Trampoline_JumpSprite.png', 300, 560, 15);
+      this.load.audio('youre_next_fi', '/assets/sounds/youre_next_fi.mp3');
 
       // Playground
       this.load.image('playground_bg', 'assets/Playground/PlayG/PlayG_BG.png');
       this.load.image('playground_elephant', 'assets/Playground/PlayG/PlayG_Elephant.png');
       this.load.image('playground_kite', 'assets/Playground/PlayG/PlayG_Kite.png');
       this.load.image('playground_trampoline', 'assets/Playground/PlayG/PlayG_Trampoline.png');
+      this.load.image('playground_alien', 'assets/Playground/PlayG/PlayG_AlienBicycle.png')
 
       // Trampoline game
       this.load.image('trampoline_game_bg', 'assets/Playground/Trampoline/TrampolineG_BG.png');
@@ -577,12 +625,16 @@ Preload.prototype = {
       this.load.image('trampoline_game_grape', 'assets/Playground/Trampoline/TrampolineG_Grapes.png');
       this.load.image('trampoline_game_strawberry', 'assets/Playground/Trampoline/TrampolineG_Strawberry.png');
       this.load.image('trampoline_game_jump_button', 'assets/Playground/Trampoline/TrampolineG_JumpButton.png');  
-      this.load.audio('bee_sound', 'assets/sounds/bee_buzzing.mp3');
+      this.load.audio('bee_sound', 'assets/sounds/Tukes_bee_sfx.mp3');
       this.load.image('trampoline_game_win', 'assets/Playground/Trampoline/TrampolineG_Win.png');
+      this.load.image('trampoline_rbutton', 'assets/Playground/Trampoline/TrampolineG_RightButton.png');
+      this.load.image('trampoline_lbutton', 'assets/Playground/Trampoline/TrampolineG_LeftButton.png');
 
       // Flying kite cutscene
       this.load.image('flying_kite_bg', 'assets/End_FlyingKite/FlyingKite.png');
 
+      this.music = this.add.audio('bg_music');
+      this.music.play('',0,1,true);
       console.log("Yo dawg. Preloader preloaded.");
 
     },
@@ -601,13 +653,42 @@ Preload.prototype = {
 
 module.exports = Preload;
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
+'use strict';
+  function Story() {}
+  Story.prototype = {
+    preload: function() {
+      // Override this method to add some load operations. 
+      // If you need to use the loader, you may need to use them here.
+    },
+    create: function() {
+      // This method is called after the game engine successfully switches states. 
+      // Feel free to add any setup code here (do not load anything here, override preload() instead).
+    },
+    update: function() {
+      // state update code
+    },
+    paused: function() {
+      // This method will be called when game paused.
+    },
+    render: function() {
+      // Put render operations here.
+    },
+    shutdown: function() {
+      // This method will be called when the state is shut down 
+      // (i.e. you switch to another state from this one).
+    }
+  };
+module.exports = Story;
+
+},{}],18:[function(require,module,exports){
 'use strict';
   function Thinking() {}
   Thinking.prototype = {
     create: function() {
       this.add.sprite(0, 0, 'thinking');
       this.add.button(850, 600, 'fwd_button', this.startClick, this);
+      this.add.audio('thinking_sound').play();
     },
     startClick: function() {
       this.game.state.start('home');
@@ -615,7 +696,7 @@ module.exports = Preload;
   };
 module.exports = Thinking;
 
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 'use strict';
   function Trampoline() {}
   Trampoline.prototype = {
@@ -630,6 +711,8 @@ module.exports = Thinking;
       this.scorePointer = this.add.sprite(114, 21, 'score_pointer');
       this.add.sprite(40, 35, 'score_basket');
       this.add.button(850, 590, 'trampoline_game_jump_button', this.playerJump, this);
+      this.add.button(25, 590, 'trampoline_lbutton', this.playerLeft, this);
+      this.add.button(220, 590, 'trampoline_rbutton', this.playerRight, this);
       this.add.button(899, 23, 'exit_btn', this.exitScene, this);    
 
       this.beeSound = this.add.audio('bee_sound');
@@ -661,7 +744,8 @@ module.exports = Thinking;
 
       if (this.scorePointer.x > 672) {
          this.game.state.start('trampolineGameWin');
-      }      
+      }
+
     },
     pickCherry: function() {
       this.popSound.play();
@@ -692,6 +776,7 @@ module.exports = Thinking;
     },
     beeCollision: function() {
       console.log("sting!");
+      //this.beeSound.play();
     },
     resetBee: function() {
       this.bee.reset(1024, this.game.rnd.integerInRange(100, 400));
@@ -699,7 +784,14 @@ module.exports = Thinking;
     },
     playerJump: function() {
       this.player.body.velocity.y = 600;
-      //this.player.body.velocity.x = this.game.rnd.integerInRange(-100, 100)
+    },
+    playerLeft: function() {
+      if (this.player.body.velocity.x > 0)
+        this.player.body.velocity.x = -(this.player.body.velocity.x)
+    },
+    playerRight: function() {
+      if (this.player.body.velocity.x < 0)
+      this.player.body.velocity.x = -(this.player.body.velocity.x);
     },
     exitScene: function() {
       this.game.state.start('playground');
@@ -707,7 +799,7 @@ module.exports = Thinking;
   };
 module.exports = Trampoline;
 
-},{}],18:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 'use strict';
   function TrampolineCutscene() {}
   TrampolineCutscene.prototype = {
@@ -717,6 +809,7 @@ module.exports = Trampoline;
       this.jumping = this.add.sprite(250, 0, 'trampoline_jumping', 1);
       this.add.sprite(93, 100, 'trampoline_front');
       this.add.button(850, 600, 'fwd_button', this.startTrampoline, this);
+      this.add.audio('youre_next_fi').play();
 
       this.jumpingAnim = this.jumping.animations.add('jumps');
       this.jumpingAnimation();
@@ -730,12 +823,12 @@ module.exports = Trampoline;
   };
 module.exports = TrampolineCutscene;
 
-},{}],19:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 'use strict';
   function TrampolineGameWin() {}
   TrampolineGameWin.prototype = {
     create: function() {
-      this.add.sprite(0, 0, 'veggie_game_win');
+      this.add.sprite(0, 0, 'trampoline_game_win');
       this.applauseSound = this.add.audio('applause_sound');
       this.game.time.events.add(Phaser.Timer.SECOND * 3, this.startPlayground, this);
       this.applauseSound.play();
@@ -746,7 +839,7 @@ module.exports = TrampolineCutscene;
   };
 module.exports = TrampolineGameWin;
 
-},{}],20:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 'use strict';
   function VeggieGameWin() {}
   VeggieGameWin.prototype = {
@@ -762,7 +855,7 @@ module.exports = TrampolineGameWin;
   };
 module.exports = VeggieGameWin;
 
-},{}],21:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 'use strict';
   function VeggiePatch() {}
   VeggiePatch.prototype = {
@@ -775,26 +868,14 @@ module.exports = VeggieGameWin;
       this.add.sprite(0, 438, 'veggiep_slice3');
       this.tomato = this.add.sprite(105, 518, 'veggiep_tomato');
       this.add.sprite(0, 618, 'veggiep_slice4');
-      this.backButton = this.add.button(40, 20, 'back_button' , this.startFrontYard, this);
-      this.add.sprite(205, 20, 'score_basket');
-      this.add.sprite(275, 30, 'score_meter');
-      this.scorePointer = this.add.sprite(270, 24, 'score_pointer');
-      /*this.add.sprite(65, 26, 'veggiep_score_carrot1');
-      this.add.sprite(150, 40, 'veggiep_score_carrot2');
-      this.add.sprite(315, 52, 'veggiep_score_potato1');
-      this.add.sprite(412, 40, 'veggiep_score_potato2');
-      this.add.sprite(587, 52,'veggiep_score_tomato1');
-      this.add.sprite(674, 40, 'veggiep_score_tomato2');*/
+      this.backButton = this.add.button(899, 23, 'exit_btn' , this.startFrontYard, this);
+      this.add.sprite(155, 20, 'score_basket');
+      this.add.sprite(225, 30, 'score_meter');
+      this.scorePointer = this.add.sprite(220, 24, 'score_pointer');
 
       this.game.physics.startSystem(Phaser.Physics.ARCADE);
       this.game.physics.enable([this.potato, this.tomato, this.carrot], Phaser.Physics.ARCADE);
 
-      //this.carrotSpawner = this.game.time.events.loop(Phaser.Timer.SECOND * 1.25, this.spawnCarrot, this);
-      //this.carrotSpawner.timer.start();
-
-      //this.potato.body.velocity.y = -100; 
-      //this.tomato.body.velocity.y = -100; 
-      //this.carrot.body.velocity.y = -100;   
       this.bounceCarrot(this.carrot);
       this.bounceCarrot(this.tomato);
       this.bounceCarrot(this.potato);
@@ -814,7 +895,7 @@ module.exports = VeggieGameWin;
 
     },
     update: function() {
-      if (this.scorePointer.x > 807.5) {
+      if (this.scorePointer.x > 757.5) {
          this.game.state.start('veggieGameWin');
       }
     },
@@ -857,7 +938,6 @@ module.exports = VeggieGameWin;
       var bounce = this.game.add.tween(item);
       bounce.to({ y: (item.y-150) }, 1000 + Math.random() * 3000, Phaser.Easing.Bounce.Out)
       .to({ y: item.y+150 }, 1000 + Math.random() * 3000, Phaser.Easing.Bounce.Out);
-      //bounce.onComplete.add(this.spawnCarrot, this)
       bounce.loop();
       bounce.start();
     },
@@ -868,7 +948,7 @@ module.exports = VeggieGameWin;
   };
 module.exports = VeggiePatch;
 
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 'use strict';
   function Walkingout() {}
   Walkingout.prototype = {
