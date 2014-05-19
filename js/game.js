@@ -373,7 +373,7 @@ module.exports = GameOver;
   HelmetOff.prototype = {
     create: function() {
       this.add.sprite(0, 0, 'helmet_off_bg');
-      this.helmet_off_alien = this.add.sprite(212, 48, 'helmet_off_anim', 1);
+      this.helmet_off_alien = this.add.sprite(212, 48, 'helmet_off_anim');
       this.helmetOffSound = this.add.audio('helmet_on_sound');
 
       this.helmetOffAnim = this.helmet_off_alien.animations.add('off');
