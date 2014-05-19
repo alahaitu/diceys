@@ -263,7 +263,7 @@ module.exports = CyclingOut;
   FlyingKite.prototype = {
     create: function() {
       this.add.sprite(0, 0, 'flying_kite_bg');
-      this.add.button(899, 23, 'exit_btn', this.exitScene, this);  
+      this.add.button(850, 600, 'fwd_button', this.exitScene, this);  
     },
     exitScene: function() {
       this.game.state.start('menu');
@@ -422,7 +422,7 @@ Menu.prototype = {
   update: function() {
   },
   startClick: function() {
-    this.game.state.start('trampoline');
+    this.game.state.start('story');
   },
   startYellow: function() {
     this.game.state.start('thinking');
@@ -657,27 +657,60 @@ module.exports = Preload;
 'use strict';
   function Story() {}
   Story.prototype = {
-    preload: function() {
-      // Override this method to add some load operations. 
-      // If you need to use the loader, you may need to use them here.
-    },
+
     create: function() {
-      // This method is called after the game engine successfully switches states. 
-      // Feel free to add any setup code here (do not load anything here, override preload() instead).
+      this.currentScene = this.add.sprite(0, 0, 'storyscene1');
+      this.game.time.events.add(Phaser.Timer.SECOND * 3, this.nextScene2, this);
+      this.game.time.events.add(Phaser.Timer.SECOND * 6, this.nextScene3, this);
+      this.game.time.events.add(Phaser.Timer.SECOND * 9, this.nextScene4, this);
+      this.game.time.events.add(Phaser.Timer.SECOND * 12, this.nextScene5, this);
+      this.game.time.events.add(Phaser.Timer.SECOND * 15, this.nextScene6, this);
+      this.game.time.events.add(Phaser.Timer.SECOND * 18, this.nextScene7, this);
+      this.game.time.events.add(Phaser.Timer.SECOND * 21, this.nextScene8, this);
+      this.game.time.events.add(Phaser.Timer.SECOND * 24, this.nextScene9, this);
+      this.game.time.events.add(Phaser.Timer.SECOND * 27, this.nextScene10, this);
+      this.game.time.events.add(Phaser.Timer.SECOND * 30, this.nextScene11, this);
+      this.game.time.events.add(Phaser.Timer.SECOND * 33, this.nextScene12, this);
+      this.game.time.events.add(Phaser.Timer.SECOND * 36, this.exitScene, this);
+
+      this.add.button(899, 23, 'exit_btn', this.exitScene, this);
     },
-    update: function() {
-      // state update code
+    nextScene2: function() {
+      this.currentScene.loadTexture(('storyscene2'), 0);
     },
-    paused: function() {
-      // This method will be called when game paused.
+    nextScene3: function() {
+      this.currentScene.loadTexture(('storyscene3'), 0);
     },
-    render: function() {
-      // Put render operations here.
+    nextScene4: function() {
+      this.currentScene.loadTexture(('storyscene4'), 0);
     },
-    shutdown: function() {
-      // This method will be called when the state is shut down 
-      // (i.e. you switch to another state from this one).
-    }
+    nextScene5: function() {
+      this.currentScene.loadTexture(('storyscene5'), 0);
+    },
+    nextScene6: function() {
+      this.currentScene.loadTexture(('storyscene6'), 0);
+    },
+    nextScene7: function() {
+      this.currentScene.loadTexture(('storyscene7'), 0);
+    },
+    nextScene8: function() {
+      this.currentScene.loadTexture(('storyscene8'), 0);
+    },
+    nextScene9: function() {
+      this.currentScene.loadTexture(('storyscene9'), 0);
+    },
+    nextScene10: function() {
+      this.currentScene.loadTexture(('storyscene10'), 0);
+    },
+    nextScene11: function() {
+      this.currentScene.loadTexture(('storyscene11'), 0);
+    },
+    nextScene12: function() {
+      this.currentScene.loadTexture(('storyscene12'), 0);
+    },
+    exitScene: function() {
+      this.game.state.start('menu');
+    }   
   };
 module.exports = Story;
 
