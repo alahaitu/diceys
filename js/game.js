@@ -15,6 +15,7 @@ window.onload = function () {
   game.state.add('flyingKite', require('./states/flyingKite'));
   game.state.add('frontyard', require('./states/frontyard'));
   game.state.add('gameover', require('./states/gameover'));
+  game.state.add('helmetOff', require('./states/helmetOff'));
   game.state.add('home', require('./states/home'));
   game.state.add('iceCream', require('./states/iceCream'));
   game.state.add('menu', require('./states/menu'));
@@ -33,7 +34,7 @@ window.onload = function () {
 
   game.state.start('boot');
 };
-},{"./states/afterbikelane":3,"./states/bagGame":4,"./states/bikelane":5,"./states/boot":6,"./states/cyclingOut":7,"./states/flyingKite":8,"./states/frontyard":9,"./states/gameover":10,"./states/home":11,"./states/iceCream":12,"./states/menu":13,"./states/play":14,"./states/playground":15,"./states/preload":16,"./states/story":17,"./states/thinking":18,"./states/trampoline":19,"./states/trampolineCutscene":20,"./states/trampolineGameWin":21,"./states/veggieGameWin":22,"./states/veggiePatch":23,"./states/walkingout":24}],2:[function(require,module,exports){
+},{"./states/afterbikelane":3,"./states/bagGame":4,"./states/bikelane":5,"./states/boot":6,"./states/cyclingOut":7,"./states/flyingKite":8,"./states/frontyard":9,"./states/gameover":10,"./states/helmetOff":11,"./states/home":12,"./states/iceCream":13,"./states/menu":14,"./states/play":15,"./states/playground":16,"./states/preload":17,"./states/story":18,"./states/thinking":19,"./states/trampoline":20,"./states/trampolineCutscene":21,"./states/trampolineGameWin":22,"./states/veggieGameWin":23,"./states/veggiePatch":24,"./states/walkingout":25}],2:[function(require,module,exports){
 'use strict';
 
 var Stone = function(game, x, y, frame, speed) {
@@ -75,7 +76,7 @@ module.exports = Stone;
       this.game.state.start('iceCream');
     },
     startTrampoline: function() {
-      this.game.state.start('playground');
+      this.game.state.start('helmetOff');
     }
   };
 module.exports = Afterbikelane;
@@ -85,9 +86,10 @@ module.exports = Afterbikelane;
   function BagGame() {}
   BagGame.prototype = {
     create: function() {
-      this.add.button(0, 0, 'bag_game_ph', this.startHome, this);
+      this.add.sprite(0, 0, 'bag_game_ph');
+      this.add.button(899, 23, 'exit_btn', this.exitScene, this); 
     },
-    startHome: function() {
+    exitScene: function() {
       this.game.state.start('home');
     }
   };
@@ -367,6 +369,29 @@ module.exports = GameOver;
 
 },{}],11:[function(require,module,exports){
 'use strict';
+  function HelmetOff() {}
+  HelmetOff.prototype = {
+    create: function() {
+      this.add.sprite(0, 0, 'helmet_off_bg');
+      this.helmet_off_alien = this.add.sprite(212, 48, 'helmet_off_anim', 1);
+      this.helmetOffSound = this.add.audio('helmet_on_sound');
+
+      this.helmetOffAnim = this.helmet_off_alien.animations.add('off');
+      this.game.time.events.add(Phaser.Timer.SECOND * 1, this.helmetAnimation, this);
+    },
+    helmetAnimation: function(){
+      this.helmetOffAnim.play(16, false);
+      this.helmetOffSound.play();
+      this.game.time.events.add(Phaser.Timer.SECOND * 2, this.startNext, this);
+    },
+    startNext: function() {
+      this.game.state.start('playground');
+    }
+  };
+module.exports = HelmetOff;
+
+},{}],12:[function(require,module,exports){
+'use strict';
   function Home() {}
   Home.prototype = {
     create: function() {
@@ -387,20 +412,21 @@ module.exports = GameOver;
   };
 module.exports = Home;
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 'use strict';
   function IceCream() {}
   IceCream.prototype = {
     create: function() {
-      this.add.button(0, 0, 'ice_cream_ph', this.startAfterBikelane, this);
+      this.add.sprite(0, 0, 'ice_cream_ph');
+      this.add.button(899, 23, 'exit_btn', this.exitScene, this); 
     },
-    startAfterBikelane: function() {
+    exitScene: function() {
       this.game.state.start('afterbikelane');
     }
   };
 module.exports = IceCream;
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 
 'use strict';
 function Menu() {}
@@ -431,7 +457,7 @@ Menu.prototype = {
 
 module.exports = Menu;
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 
   'use strict';
   function Play() {}
@@ -458,7 +484,7 @@ module.exports = Menu;
   };
   
   module.exports = Play;
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 'use strict';
   function Playground() {}
   Playground.prototype = {
@@ -481,7 +507,7 @@ module.exports = Menu;
   };
 module.exports = Playground;
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 
 'use strict';
 function Preload() {
@@ -538,6 +564,8 @@ Preload.prototype = {
       this.load.audio('thinking_sound', 'assets/sounds/Hmmm1.mp3');
       this.load.spritesheet('fwd_button', 'assets/CutScene_Thinking/Thinking_ButtonSprite.png', 150, 150, 1);
       this.load.image('walking_out_house', 'assets/Animation_Stills/S5_WalkingOutHouse.png');
+      this.load.image('helmet_off_bg', 'assets/CutScene_HelmetOff/HelmetOff_BG.png');
+      this.load.spritesheet('helmet_off_anim', 'assets/CutScene_HelmetOff/HelmetOff_SpriteMap1.png', 600, 720, 16);
 
       // Mini game placeholders
       this.load.image('veggie_patch_ph', 'assets/FrontYard/MiniGames/VeggiePatch.png');
@@ -631,7 +659,7 @@ Preload.prototype = {
       this.load.image('trampoline_lbutton', 'assets/Playground/Trampoline/TrampolineG_LeftButton.png');
 
       // Flying kite cutscene
-      this.load.image('flying_kite_bg', 'assets/End_FlyingKite/FlyingKite.png');
+      this.load.image('flying_kite_bg', 'assets/End_FlyingKite/FlyingKite_Visual.png');
 
       this.music = this.add.audio('bg_music');
       this.music.play('',0,1,true);
@@ -653,7 +681,7 @@ Preload.prototype = {
 
 module.exports = Preload;
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 'use strict';
   function Story() {}
   Story.prototype = {
@@ -714,7 +742,7 @@ module.exports = Preload;
   };
 module.exports = Story;
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 'use strict';
   function Thinking() {}
   Thinking.prototype = {
@@ -729,7 +757,7 @@ module.exports = Story;
   };
 module.exports = Thinking;
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 'use strict';
   function Trampoline() {}
   Trampoline.prototype = {
@@ -832,7 +860,7 @@ module.exports = Thinking;
   };
 module.exports = Trampoline;
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 'use strict';
   function TrampolineCutscene() {}
   TrampolineCutscene.prototype = {
@@ -842,10 +870,15 @@ module.exports = Trampoline;
       this.jumping = this.add.sprite(250, 0, 'trampoline_jumping', 1);
       this.add.sprite(93, 100, 'trampoline_front');
       this.add.button(850, 600, 'fwd_button', this.startTrampoline, this);
-      this.add.audio('youre_next_fi').play();
+      this.game.time.events.add(Phaser.Timer.SECOND * 0.5, this.trampolineKidSay, this);
+
+      this.trampolineKidSound = this.add.audio('youre_next_fi');
 
       this.jumpingAnim = this.jumping.animations.add('jumps');
       this.jumpingAnimation();
+    },
+    trampolineKidSay: function() {
+      this.trampolineKidSound.play();
     },
     jumpingAnimation: function(){
       this.jumpingAnim.play(16, true);
@@ -856,7 +889,7 @@ module.exports = Trampoline;
   };
 module.exports = TrampolineCutscene;
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 'use strict';
   function TrampolineGameWin() {}
   TrampolineGameWin.prototype = {
@@ -872,7 +905,7 @@ module.exports = TrampolineCutscene;
   };
 module.exports = TrampolineGameWin;
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 'use strict';
   function VeggieGameWin() {}
   VeggieGameWin.prototype = {
@@ -888,7 +921,7 @@ module.exports = TrampolineGameWin;
   };
 module.exports = VeggieGameWin;
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 'use strict';
   function VeggiePatch() {}
   VeggiePatch.prototype = {
@@ -981,7 +1014,7 @@ module.exports = VeggieGameWin;
   };
 module.exports = VeggiePatch;
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
   function Walkingout() {}
   Walkingout.prototype = {
