@@ -608,7 +608,7 @@ Preload.prototype = {
       this.load.image('trampoline_front', 'assets/CutScene_Trampoline/Trampoline_Half_Front.png');
       this.load.image('trampoline_back', 'assets/CutScene_Trampoline/Trampoline_Half_Back.png');
       this.load.spritesheet('trampoline_jumping', 'assets/CutScene_Trampoline/Trampoline_JumpSprite.png', 300, 560, 15);
-      this.load.audio('youre_next_fi', '/assets/sounds/youre_next_fi.mp3');
+      this.load.audio('youre_next_fi', 'assets/sounds/youre_next_fi.mp3');
 
       // Playground
       this.load.image('playground_bg', 'assets/Playground/PlayG/PlayG_BG.png');
