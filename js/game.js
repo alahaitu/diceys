@@ -565,7 +565,7 @@ Preload.prototype = {
       this.load.spritesheet('fwd_button', 'assets/CutScene_Thinking/Thinking_ButtonSprite.png', 150, 150, 1);
       this.load.image('walking_out_house', 'assets/Animation_Stills/S5_WalkingOutHouse.png');
       this.load.image('helmet_off_bg', 'assets/CutScene_HelmetOff/HelmetOff_BG.png');
-      this.load.spritesheet('helmet_off_anim', 'assets/CutScene_HelmetOff/HelmetOff_SpriteMap1.png', 600, 720, 16);
+      this.load.spritesheet('helmet_off_anim', 'assets/CutScene_HelmetOff/HelmetOff_2px.png', 600, 720, 16);
 
       // Mini game placeholders
       this.load.image('veggie_patch_ph', 'assets/FrontYard/MiniGames/VeggiePatch.png');
