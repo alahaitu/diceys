@@ -76,7 +76,7 @@ module.exports = Stone;
       this.game.state.start('iceCream');
     },
     startTrampoline: function() {
-      this.game.state.start('helmetOff');
+      this.game.state.start('playground');
     }
   };
 module.exports = Afterbikelane;
@@ -448,7 +448,7 @@ Menu.prototype = {
   update: function() {
   },
   startClick: function() {
-    this.game.state.start('helmetOff');
+    this.game.state.start('story');
   },
   startYellow: function() {
     this.game.state.start('thinking');
